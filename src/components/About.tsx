@@ -1,41 +1,30 @@
+"use client";
+
 import Image from "next/image";
+import { useLanguage } from "@/lib/LanguageContext";
 
 export default function About() {
-  const principles = [
-    "アイデアの源泉は現場にある",
-    "長期的リターンを見据えた誠実さ",
-    "仲間・チームで動くリーダーシップ",
-    "行動が先、信念が後",
-  ];
-
-  const international = [
-    "ケニア — 小学生への日本文化授業",
-    "インドネシア — 語学研修（2025年）",
-    "アメリカ — ホームステイ受入家庭で育つ",
-    "ベトナム・シンガポール — 渡航経験",
-  ];
+  const { t } = useLanguage();
 
   return (
     <section id="about" className="section-padding">
       <div className="mx-auto max-w-[var(--max-content)]">
-        <div className="section-label fade-in">About</div>
+        <div className="section-label fade-in">{t.about.label}</div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-[var(--space-lg)]">
-          {/* Left — intro text + profile photo */}
           <div className="lg:col-span-7 fade-in fade-in-delay-1">
             <h2 className="font-[family-name:var(--font-space-grotesk)] text-[clamp(1.8rem,4vw,2.8rem)] font-semibold leading-tight mb-8">
-              19歳。京都から慶應SFCへ。
+              {t.about.heading1}
               <br />
               <span className="text-[var(--text-secondary)]">
-                対話と行動で社会を動かす。
+                {t.about.heading2}
               </span>
             </h2>
 
-            {/* Profile photo */}
             <div className="relative aspect-[3/2] rounded-lg overflow-hidden mb-8">
               <Image
                 src="/images/political_photo.jpg"
-                alt="谷昊埜 — 海をバックにした笑顔のポートレート"
+                alt={t.about.profileAlt}
                 fill
                 className="object-cover object-top"
                 sizes="(max-width: 1024px) 100vw, 58vw"
@@ -43,30 +32,19 @@ export default function About() {
             </div>
 
             <div className="space-y-5 text-[0.95rem] leading-relaxed text-[var(--text-secondary)] max-w-[var(--max-text)]">
-              <p>
-                同志社高等学校から慶應義塾大学SFCへ。学生団体ミラコエの代表として55名の組織を率い、
-                超党派の国会議員を招いた271名規模のイベントを実現。
-              </p>
-              <p>
-                母親が選択的夫婦別姓訴訟の原告という家庭で、「声を上げなければ社会は変わらない」という
-                信念とともに育った。メキシコ出身の方との同居経験や、南アフリカ人の友人家族との交流など、
-                多文化的な環境が現在の活動の原点。
-              </p>
-              <p>
-                フリースタイルスキーではジュニアワールドツアー2位の実績を持ち、
-                競技で培った「まず飛ぶ。考えるのはその後」という姿勢が、すべての活動に通底している。
-              </p>
+              <p>{t.about.bio1}</p>
+              <p>{t.about.bio2}</p>
+              <p>{t.about.bio3}</p>
             </div>
           </div>
 
-          {/* Right — principles, international, academics */}
           <div className="lg:col-span-5 space-y-10">
             <div className="fade-in fade-in-delay-2">
               <h3 className="text-[0.7rem] font-medium tracking-[0.2em] uppercase text-[var(--text-tertiary)] mb-5">
-                行動原理
+                {t.about.principlesLabel}
               </h3>
               <ul className="space-y-3">
-                {principles.map((p, i) => (
+                {t.about.principles.map((p, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <span className="font-[family-name:var(--font-dm-mono)] text-[0.7rem] text-[var(--accent)] mt-1">
                       {String(i + 1).padStart(2, "0")}
@@ -79,15 +57,14 @@ export default function About() {
               </ul>
             </div>
 
-            {/* Kenya photo + international experience */}
             <div className="fade-in fade-in-delay-3">
               <h3 className="text-[0.7rem] font-medium tracking-[0.2em] uppercase text-[var(--text-tertiary)] mb-5">
-                海外経験
+                {t.about.internationalLabel}
               </h3>
               <div className="relative aspect-[16/9] rounded-lg overflow-hidden mb-5">
                 <Image
                   src="/images/IMG_4898.jpg"
-                  alt="ケニアの子どもたちと — 日本文化授業の様子"
+                  alt={t.about.kenyaAlt}
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 40vw"
@@ -95,7 +72,7 @@ export default function About() {
                 />
               </div>
               <ul className="space-y-3">
-                {international.map((item, i) => (
+                {t.about.international.map((item, i) => (
                   <li
                     key={i}
                     className="text-[0.85rem] text-[var(--text-secondary)] pl-4 border-l border-[var(--border)]"
@@ -108,12 +85,12 @@ export default function About() {
 
             <div className="fade-in fade-in-delay-4">
               <h3 className="text-[0.7rem] font-medium tracking-[0.2em] uppercase text-[var(--text-tertiary)] mb-5">
-                学業
+                {t.about.academicsLabel}
               </h3>
               <p className="text-[0.85rem] text-[var(--text-secondary)]">
-                慶應SFC 総合政策学部（2025年4月入学）
+                {t.about.academics1}
                 <br />
-                清水先生の日本政治外交研究（JPD）所属
+                {t.about.academics2}
               </p>
             </div>
           </div>

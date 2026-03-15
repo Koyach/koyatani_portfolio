@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP, DM_Mono, Space_Grotesk } from "next/font/google";
+import { LanguageProvider } from "@/lib/LanguageContext";
 import "./globals.css";
 
 const notoSans = Noto_Sans_JP({
@@ -47,13 +48,16 @@ export default function RootLayout({
   return (
     <html lang="ja" className="scroll-smooth">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
         <meta name="theme-color" content="#0c0f14" />
       </head>
       <body
         className={`${notoSans.variable} ${dmMono.variable} ${spaceGrotesk.variable} antialiased`}
       >
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

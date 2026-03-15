@@ -1,37 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 谷昊埜 Portfolio
 
-## Getting Started
+谷昊埜（Koya Tani）の個人ポートフォリオサイト。
 
-First, run the development server:
+## Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS v4
+- **Hosting**: Vercel
+- **i18n**: 日本語 / English（クライアントサイド切替）
+
+## Design
+
+- **Tone**: Editorial / Documentary / Bold Data
+- **Color**: ダークベース（濃紺）+ 漆inspired朱アクセント
+- **Typography**: Noto Sans JP / DM Mono / Space Grotesk
+- **Motion**: IntersectionObserver による scroll-triggered fade-in（`prefers-reduced-motion` 対応）
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── globals.css          # Design system (colors, typography, motion)
+│   ├── layout.tsx           # Root layout + LanguageProvider
+│   ├── page.tsx             # Main page (all sections)
+│   └── icon.jpg             # Favicon
+├── components/
+│   ├── Header.tsx           # Fixed header + mobile menu + language toggle
+│   ├── Hero.tsx             # Full-screen hero with background photo
+│   ├── About.tsx            # Bio, principles, international experience
+│   ├── Projects.tsx         # Mirakoe, Bedrock Space, Noto
+│   ├── Achievements.tsx     # Awards timeline + affiliations
+│   ├── Media.tsx            # TV, press, speaking appearances
+│   ├── Skiing.tsx           # Competition results + photo
+│   ├── Contact.tsx          # SNS links + Google Calendar scheduling
+│   ├── Footer.tsx           # Copyright
+│   └── ScrollReveal.tsx     # IntersectionObserver for fade-in
+└── lib/
+    ├── translations.ts      # All content in ja/en
+    └── LanguageContext.tsx   # React Context for language switching
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Development
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev        # http://localhost:3000
+npm run build      # Production build
+npm run lint       # ESLint
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## i18n
 
-## Learn More
+全テキストは `src/lib/translations.ts` に集約。
+ヘッダーの `EN` / `JA` ボタンでクライアントサイドで言語切替。
+新しいテキストを追加する場合は translations.ts の ja / en 両方に追記すること。
 
-To learn more about Next.js, take a look at the following resources:
+## Images
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+写真は `public/images/` に配置。コンポーネント内で `next/image` の `Image` で参照。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| File | Usage |
+|------|-------|
+| `profile.JPG` | Hero background |
+| `political_photo.jpg` | About section |
+| `IMG_4898.jpg` | Kenya (international experience) |
+| `miraisenkyo_photo.jpg` | Mirakoe project |
+| `class_miracoe.jpg` | Mirakoe team |
+| `skiing.jpg` | Skiing section |
+| `IMG_3781.JPG` | Contact section |
+| `favicon.JPG` / `og.JPG` | Favicon / OGP |
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Vercel に接続済み。`main` ブランチへの push で自動デプロイ。
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# koyatani_portfolio
+```bash
+vercel --prod      # Manual deploy
+```
+
+## Rules
+
+- 実績ファイルに書かれていない情報を捏造しない
+- テキスト追加時は `translations.ts` の ja / en 両方を更新
+- コンポーネントは `useLanguage()` hook で翻訳を取得
+- 画像は `next/image` + `fill` + explicit `sizes` で最適化
+- アクセシビリティ: `aria-label`, `aria-hidden`, `prefers-reduced-motion` を遵守
+- モバイルファースト: タッチターゲット 44px 以上、`100svh`、safe-area-inset

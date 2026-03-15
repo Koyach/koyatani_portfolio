@@ -1,19 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-const NAV_ITEMS = [
-  { label: "About", href: "#about" },
-  { label: "Projects", href: "#projects" },
-  { label: "Achievements", href: "#achievements" },
-  { label: "Media", href: "#media" },
-  { label: "Skiing", href: "#skiing" },
-  { label: "Contact", href: "#contact" },
-];
+import { useLanguage } from "@/lib/LanguageContext";
 
 export default function Header() {
+  const { t, locale, toggleLocale } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const NAV_ITEMS = [
+    { label: t.nav.about, href: "#about" },
+    { label: t.nav.projects, href: "#projects" },
+    { label: t.nav.achievements, href: "#achievements" },
+    { label: t.nav.media, href: "#media" },
+    { label: t.nav.skiing, href: "#skiing" },
+    { label: t.nav.contact, href: "#contact" },
+  ];
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 60);
@@ -23,7 +25,6 @@ export default function Header() {
 
   return (
     <>
-      {/* Skip link */}
       <a
         href="#about"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] focus:bg-[var(--accent)] focus:text-white focus:px-4 focus:py-2 focus:rounded"
@@ -45,63 +46,80 @@ export default function Header() {
             K.T.
           </a>
 
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-8">
-          {NAV_ITEMS.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="text-[0.75rem] font-medium tracking-[0.15em] uppercase text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
-
-        {/* Mobile menu button */}
-        <button
-          className="md:hidden flex flex-col gap-[5px] p-2"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
-        >
-          <span
-            aria-hidden="true"
-            className={`block h-[1.5px] w-5 bg-[var(--text-primary)] transition-transform ${
-              menuOpen ? "translate-y-[6.5px] rotate-45" : ""
-            }`}
-          />
-          <span
-            aria-hidden="true"
-            className={`block h-[1.5px] w-5 bg-[var(--text-primary)] transition-opacity ${
-              menuOpen ? "opacity-0" : ""
-            }`}
-          />
-          <span
-            aria-hidden="true"
-            className={`block h-[1.5px] w-5 bg-[var(--text-primary)] transition-transform ${
-              menuOpen ? "-translate-y-[6.5px] -rotate-45" : ""
-            }`}
-          />
-        </button>
-      </div>
-
-      {/* Mobile menu */}
-      {menuOpen && (
-        <nav className="md:hidden border-t border-[var(--border)] bg-[var(--bg-primary)]/95 backdrop-blur-md overscroll-contain">
-          <div className="flex flex-col px-[var(--space-sm)] py-4 gap-0">
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-8">
             {NAV_ITEMS.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
-                onClick={() => setMenuOpen(false)}
-                className="text-[0.85rem] font-medium tracking-[0.15em] uppercase text-[var(--text-secondary)] hover:text-[var(--text-primary)] py-3.5 px-2 min-h-[44px] flex items-center"
+                className="text-[0.75rem] font-medium tracking-[0.15em] uppercase text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
               >
                 {item.label}
               </a>
             ))}
+            {/* Language toggle */}
+            <button
+              onClick={toggleLocale}
+              className="font-[family-name:var(--font-dm-mono)] text-[0.75rem] tracking-wider text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors border border-[var(--border)] hover:border-[var(--border-hover)] px-3 py-1 rounded-full"
+              aria-label={locale === "ja" ? "Switch to English" : "日本語に切替"}
+            >
+              {locale === "ja" ? "EN" : "JA"}
+            </button>
+          </nav>
+
+          {/* Mobile: language toggle + hamburger */}
+          <div className="md:hidden flex items-center gap-3">
+            <button
+              onClick={toggleLocale}
+              className="font-[family-name:var(--font-dm-mono)] text-[0.7rem] tracking-wider text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors border border-[var(--border)] px-2.5 py-1 rounded-full"
+              aria-label={locale === "ja" ? "Switch to English" : "日本語に切替"}
+            >
+              {locale === "ja" ? "EN" : "JA"}
+            </button>
+            <button
+              className="flex flex-col gap-[5px] p-2"
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Toggle menu"
+            >
+              <span
+                aria-hidden="true"
+                className={`block h-[1.5px] w-5 bg-[var(--text-primary)] transition-transform ${
+                  menuOpen ? "translate-y-[6.5px] rotate-45" : ""
+                }`}
+              />
+              <span
+                aria-hidden="true"
+                className={`block h-[1.5px] w-5 bg-[var(--text-primary)] transition-opacity ${
+                  menuOpen ? "opacity-0" : ""
+                }`}
+              />
+              <span
+                aria-hidden="true"
+                className={`block h-[1.5px] w-5 bg-[var(--text-primary)] transition-transform ${
+                  menuOpen ? "-translate-y-[6.5px] -rotate-45" : ""
+                }`}
+              />
+            </button>
           </div>
-        </nav>
-      )}
+        </div>
+
+        {/* Mobile menu */}
+        {menuOpen && (
+          <nav className="md:hidden border-t border-[var(--border)] bg-[var(--bg-primary)]/95 backdrop-blur-md overscroll-contain">
+            <div className="flex flex-col px-[var(--space-sm)] py-4 gap-0">
+              {NAV_ITEMS.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="text-[0.85rem] font-medium tracking-[0.15em] uppercase text-[var(--text-secondary)] hover:text-[var(--text-primary)] py-3.5 px-2 min-h-[44px] flex items-center"
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          </nav>
+        )}
       </header>
     </>
   );
