@@ -114,8 +114,6 @@ export default function About() {
                 慶應SFC 総合政策学部（2025年4月入学）
                 <br />
                 清水先生の日本政治外交研究（JPD）所属
-                <br />
-                中室牧子研究会（教育経済学）聴講
               </p>
             </div>
           </div>
