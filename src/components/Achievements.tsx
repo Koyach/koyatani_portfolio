@@ -1,5 +1,12 @@
 const ACHIEVEMENTS = [
   {
+    year: "2026.01",
+    title: "Dan Okimoto Rising Innovators Fellows 最年少採択",
+    detail: "Silicon Valley Japan Platform主催のフェローシッププログラム",
+    featured: true,
+    url: "https://okimotofellowship.svjp.org/2025jpcohort-jp",
+  },
+  {
     year: "2025.07",
     title: "第5回学生団体サミット 優勝",
     detail: "日本一の学生団体の代表に（賞金20万円）",
@@ -66,7 +73,28 @@ export default function Achievements() {
                       : "text-[1rem]"
                   }`}
                 >
-                  {a.title}
+                  {a.url ? (
+                    <a
+                      href={a.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-[var(--accent)] transition-colors"
+                    >
+                      {a.title}
+                      <svg
+                        aria-hidden="true"
+                        className="inline-block w-3.5 h-3.5 ml-1.5 text-[var(--text-tertiary)]"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                      </svg>
+                    </a>
+                  ) : (
+                    a.title
+                  )}
                   {a.featured && (
                     <span className="inline-block ml-3 w-2 h-2 rounded-full bg-[var(--accent)] align-middle" />
                   )}
