@@ -1,26 +1,226 @@
 @import "tailwindcss";
 
+/* ──────────────────────────────────────────
+   Design System — 谷昊埜 Portfolio
+   Tone: Editorial / Documentary / Bold Data
+   ────────────────────────────────────────── */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Core palette — dark editorial base */
+  --bg-primary: #0c0f14;
+  --bg-secondary: #141821;
+  --bg-tertiary: #1a1f2e;
+  --bg-card: #161b27;
+
+  /* Text hierarchy */
+  --text-primary: #f0ece4;
+  --text-secondary: #9ba3b2;
+  --text-tertiary: #5e6678;
+
+  /* Accent — urushi-inspired vermillion */
+  --accent: #c94a2e;
+  --accent-light: #e05a3c;
+  --accent-glow: rgba(201, 74, 46, 0.15);
+
+  /* Snow white for contrast */
+  --snow: #f0ece4;
+  --snow-dim: rgba(240, 236, 228, 0.06);
+
+  /* Borders & surfaces */
+  --border: rgba(240, 236, 228, 0.08);
+  --border-hover: rgba(240, 236, 228, 0.16);
+
+  /* Spacing scale */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 2rem;
+  --space-lg: 4rem;
+  --space-xl: 8rem;
+  --space-2xl: 12rem;
+
+  /* Section max-width */
+  --max-content: 1200px;
+  --max-text: 680px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-noto-sans);
+  --font-mono: var(--font-dm-mono);
+  --font-display: var(--font-space-grotesk);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Base ─────────────────────────────── */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans), "Hiragino Kaku Gothic ProN", sans-serif;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--snow);
+}
+
+/* ── Noise overlay for texture ────────── */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ── Scroll-triggered fade-in ─────────── */
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-in-delay-1 { transition-delay: 0.1s; }
+.fade-in-delay-2 { transition-delay: 0.2s; }
+.fade-in-delay-3 { transition-delay: 0.3s; }
+.fade-in-delay-4 { transition-delay: 0.4s; }
+
+/* ── Big numbers — editorial data style ── */
+
+.stat-number {
+  font-family: var(--font-mono), monospace;
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-top: 0.5rem;
+}
+
+/* ── Section styling ──────────────────── */
+
+.section-padding {
+  padding: var(--space-xl) var(--space-md);
+}
+
+@media (max-width: 768px) {
+  .section-padding {
+    padding: var(--space-lg) var(--space-sm);
+  }
+}
+
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.section-label::before {
+  content: "";
+  display: block;
+  width: 2rem;
+  height: 1px;
+  background: var(--accent);
+}
+
+/* ── Horizontal rule ──────────────────── */
+
+.divider {
+  border: none;
+  height: 1px;
+  background: var(--border);
+  margin: 0;
+}
+
+/* ── Link style ───────────────────────── */
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ── Scrollbar ────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* ── Reduced motion ───────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Heading balance ──────────────────── */
+
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+/* ── Touch optimization ───────────────── */
+
+a, button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
