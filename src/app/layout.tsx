@@ -35,9 +35,49 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ja_JP",
   },
+  alternates: {
+    canonical: "https://koyataniportfolio.vercel.app",
+  },
   other: {
     "theme-color": "#0c0f14",
   },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "谷昊埜",
+  alternateName: "Koya Tani",
+  url: "https://koyataniportfolio.vercel.app",
+  jobTitle: "Student / Entrepreneur",
+  affiliation: [
+    {
+      "@type": "Organization",
+      name: "ミラコエ",
+      description: "若者の政治参加を促す学生団体",
+    },
+    {
+      "@type": "Organization",
+      name: "Bedrock Space",
+      description: "AI Startup",
+    },
+    {
+      "@type": "EducationalOrganization",
+      name: "慶應義塾大学 総合政策学部（SFC）",
+    },
+  ],
+  sameAs: [
+    "https://www.instagram.com/koyatani_0828",
+    "https://x.com/koyach777",
+    "https://www.facebook.com/share/1FYjf7sFTV/",
+    "https://note.com/koya_sfc",
+  ],
+  knowsAbout: [
+    "Political Participation",
+    "Civic Education",
+    "Freestyle Skiing",
+    "Entrepreneurship",
+  ],
 };
 
 export default function RootLayout({
@@ -53,6 +93,10 @@ export default function RootLayout({
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
         <meta name="theme-color" content="#0c0f14" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body
         className={`${notoSans.variable} ${dmMono.variable} ${spaceGrotesk.variable} antialiased`}
