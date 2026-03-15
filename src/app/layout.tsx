@@ -93,6 +93,7 @@ export default function RootLayout({
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
         <meta name="theme-color" content="#0c0f14" />
+        <meta name="google-site-verification" content="LX89mHeu0dMOzAywtjVxX-g1kHee3EzhxskKCucGCTU" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
