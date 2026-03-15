@@ -1,8 +1,21 @@
+import Image from "next/image";
+
 export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-end pb-[var(--space-xl)] px-[var(--space-md)]">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg-secondary)] via-[var(--bg-primary)] to-[var(--bg-primary)]" />
+      {/* Background image — back silhouette facing ocean */}
+      <div className="absolute inset-0">
+        <Image
+          src="/images/profile.JPG"
+          alt="谷昊埜 — 海を見つめる後ろ姿"
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg-primary)]/60 via-[var(--bg-primary)]/40 to-[var(--bg-primary)]" />
+      </div>
 
       {/* Subtle accent glow */}
       <div className="absolute top-[20%] right-[10%] w-[400px] h-[400px] rounded-full bg-[var(--accent-glow)] blur-[120px] pointer-events-none" />

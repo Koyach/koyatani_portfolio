@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const RESULTS = [
   {
     event: "ジュニアワールドツアー（フリースタイル）",
@@ -11,7 +13,7 @@ const RESULTS = [
   },
   {
     event: "近畿大会（アルペン / 2025年）",
-    result: "男子初優勝・個人入賞",
+    result: "男子団体初優勝",
     highlight: true,
   },
   {
@@ -39,7 +41,7 @@ export default function Skiing() {
         <div className="section-label fade-in">Skiing</div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-[var(--space-lg)]">
-          {/* Left — overview */}
+          {/* Left — overview + photo */}
           <div className="lg:col-span-5 fade-in fade-in-delay-1">
             <h2 className="font-[family-name:var(--font-space-grotesk)] text-[clamp(1.8rem,4vw,3rem)] font-bold leading-tight mb-6">
               フリースタイル
@@ -51,11 +53,16 @@ export default function Skiing() {
               自由に自分らしく生きることを体現している。
             </p>
 
-            {/* Photo placeholder */}
-            <div className="aspect-[4/3] rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border)] flex items-center justify-center">
-              <span className="text-[0.75rem] text-[var(--text-tertiary)] tracking-wider uppercase">
-                Photo Placeholder
-              </span>
+            {/* Skiing photo */}
+            <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
+              <Image
+                src="/images/skiing.jpg"
+                alt="谷昊埜 — フリースタイルスキーのエアトリック"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 40vw"
+                loading="lazy"
+              />
             </div>
           </div>
 

@@ -1,18 +1,25 @@
+import Image from "next/image";
+
 const LINKS = [
   {
     label: "Instagram",
-    url: "https://instagram.com/",
-    handle: "@koyatani",
+    url: "https://www.instagram.com/koyatani_0828",
+    handle: "@koyatani_0828",
   },
   {
-    label: "X (Twitter)",
-    url: "https://x.com/",
-    handle: "@koyatani",
+    label: "X",
+    url: "https://x.com/koyach777",
+    handle: "@koyach777",
   },
   {
-    label: "YouTube",
-    url: "https://youtube.com/",
-    handle: "谷昊埜",
+    label: "Facebook",
+    url: "https://www.facebook.com/share/1FYjf7sFTV/",
+    handle: "Koya Tani",
+  },
+  {
+    label: "note",
+    url: "https://note.com/koya_sfc",
+    handle: "koya_sfc",
   },
 ];
 
@@ -23,14 +30,46 @@ export default function Contact() {
         <div className="section-label fade-in">Contact</div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-[var(--space-lg)] items-end">
-          {/* Left — message */}
+          {/* Left — message + photo + schedule button */}
           <div className="fade-in fade-in-delay-1">
             <h2 className="font-[family-name:var(--font-space-grotesk)] text-[clamp(1.8rem,4vw,3rem)] font-bold leading-tight mb-6">
               話しましょう。
             </h2>
-            <p className="text-[0.95rem] text-[var(--text-secondary)] leading-relaxed max-w-[400px]">
+            <p className="text-[0.95rem] text-[var(--text-secondary)] leading-relaxed max-w-[400px] mb-8">
               取材・登壇・協業のご相談など、お気軽にSNSからご連絡ください。
             </p>
+
+            {/* Schedule button */}
+            <a
+              href="https://calendar.app.google/riCES5AXDQzaAwF37"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--accent)] text-[var(--snow)] text-[0.85rem] font-medium tracking-wide rounded-lg hover:bg-[var(--accent-light)] transition-colors mb-8"
+            >
+              <svg
+                aria-hidden="true"
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+              </svg>
+              日程を調整する
+            </a>
+
+            {/* Photo */}
+            <div className="relative aspect-[3/2] rounded-lg overflow-hidden">
+              <Image
+                src="/images/IMG_3781.JPG"
+                alt="谷昊埜 — 海を見つめる後ろ姿"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                loading="lazy"
+              />
+            </div>
           </div>
 
           {/* Right — links */}

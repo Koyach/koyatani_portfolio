@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const PROJECTS = [
   {
     id: "mirakoe",
@@ -7,6 +9,8 @@ const PROJECTS = [
     role: "代表（2024年9月〜現在）",
     description:
       "若者の主体的な政治参加を促す学生団体。設立時4名から55名へ成長させ、超党派の国会議員5名を招いた大規模イベントを実現。",
+    image: "/images/miraisenkyo_photo.jpg",
+    imageAlt: "谷昊埜 — イベント会場にて",
     stats: [
       { value: "271", label: "ミライ選挙 参加者" },
       { value: "55", label: "メンバー数" },
@@ -72,6 +76,34 @@ export default function Projects() {
                   {project.role}
                 </p>
               </div>
+
+              {/* Photos */}
+              {project.image && (
+                <div className="flex gap-4 mb-10">
+                  <div className="relative aspect-[2/1] rounded-lg overflow-hidden flex-1">
+                    <Image
+                      src={project.image}
+                      alt={project.imageAlt || ""}
+                      fill
+                      className="object-cover object-[center_35%]"
+                      sizes="(max-width: 768px) 50vw, 300px"
+                      loading="lazy"
+                    />
+                  </div>
+                  {project.id === "mirakoe" && (
+                    <div className="relative aspect-[2/1] rounded-lg overflow-hidden flex-1">
+                      <Image
+                        src="/images/class_miracoe.jpg"
+                        alt="ミラコエ — 集合写真"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 50vw, 300px"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Description */}
               <p className="text-[0.95rem] leading-relaxed text-[var(--text-secondary)] max-w-[var(--max-text)] mb-10">

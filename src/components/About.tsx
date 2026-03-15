@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function About() {
   const principles = [
     "アイデアの源泉は現場にある",
@@ -19,7 +21,7 @@ export default function About() {
         <div className="section-label fade-in">About</div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-[var(--space-lg)]">
-          {/* Left — intro text */}
+          {/* Left — intro text + profile photo */}
           <div className="lg:col-span-7 fade-in fade-in-delay-1">
             <h2 className="font-[family-name:var(--font-space-grotesk)] text-[clamp(1.8rem,4vw,2.8rem)] font-semibold leading-tight mb-8">
               19歳。京都から慶應SFCへ。
@@ -28,6 +30,17 @@ export default function About() {
                 対話と行動で社会を動かす。
               </span>
             </h2>
+
+            {/* Profile photo */}
+            <div className="relative aspect-[3/2] rounded-lg overflow-hidden mb-8">
+              <Image
+                src="/images/political_photo.jpg"
+                alt="谷昊埜 — 海をバックにした笑顔のポートレート"
+                fill
+                className="object-cover object-top"
+                sizes="(max-width: 1024px) 100vw, 58vw"
+              />
+            </div>
 
             <div className="space-y-5 text-[0.95rem] leading-relaxed text-[var(--text-secondary)] max-w-[var(--max-text)]">
               <p>
@@ -46,7 +59,7 @@ export default function About() {
             </div>
           </div>
 
-          {/* Right — principles & international */}
+          {/* Right — principles, international, academics */}
           <div className="lg:col-span-5 space-y-10">
             <div className="fade-in fade-in-delay-2">
               <h3 className="text-[0.7rem] font-medium tracking-[0.2em] uppercase text-[var(--text-tertiary)] mb-5">
@@ -66,10 +79,21 @@ export default function About() {
               </ul>
             </div>
 
+            {/* Kenya photo + international experience */}
             <div className="fade-in fade-in-delay-3">
               <h3 className="text-[0.7rem] font-medium tracking-[0.2em] uppercase text-[var(--text-tertiary)] mb-5">
                 海外経験
               </h3>
+              <div className="relative aspect-[16/9] rounded-lg overflow-hidden mb-5">
+                <Image
+                  src="/images/IMG_4898.jpg"
+                  alt="ケニアの子どもたちと — 日本文化授業の様子"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  loading="lazy"
+                />
+              </div>
               <ul className="space-y-3">
                 {international.map((item, i) => (
                   <li

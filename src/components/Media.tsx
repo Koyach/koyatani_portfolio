@@ -5,6 +5,7 @@ const MEDIA = [
       {
         title: "AbemaTV",
         detail: "2026年衆議院選挙 選挙特番に出演",
+        url: "https://www.youtube.com/watch?v=ErYx_5WFNM0",
       },
       {
         title: "TBS京都",
@@ -13,10 +14,12 @@ const MEDIA = [
       {
         title: "YouTube「令和の猫」",
         detail: "レギュラーとして継続出演",
+        url: "https://www.youtube.com/watch?v=DUPNnr09aBQ&t=760s",
       },
       {
         title: "YouTube「日本未来会議」",
         detail: "外国人労働者受け入れ等のテーマで複数回出演",
+        url: "https://www.youtube.com/watch?v=qrzjkqnooBQ&t=120s",
       },
     ],
   },
@@ -67,12 +70,40 @@ export default function Media() {
               <ul className="space-y-6">
                 {group.items.map((item, ii) => (
                   <li key={ii}>
-                    <p className="text-[0.95rem] font-medium text-[var(--text-primary)]">
-                      {item.title}
-                    </p>
-                    <p className="text-[0.8rem] text-[var(--text-secondary)] mt-1">
-                      {item.detail}
-                    </p>
+                    {item.url ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group"
+                      >
+                        <p className="text-[0.95rem] font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">
+                          {item.title}
+                          <svg
+                            aria-hidden="true"
+                            className="inline-block w-3.5 h-3.5 ml-1.5 text-[var(--text-tertiary)] group-hover:text-[var(--accent)] transition-colors"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={1.5}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                          </svg>
+                        </p>
+                        <p className="text-[0.8rem] text-[var(--text-secondary)] mt-1">
+                          {item.detail}
+                        </p>
+                      </a>
+                    ) : (
+                      <>
+                        <p className="text-[0.95rem] font-medium text-[var(--text-primary)]">
+                          {item.title}
+                        </p>
+                        <p className="text-[0.8rem] text-[var(--text-secondary)] mt-1">
+                          {item.detail}
+                        </p>
+                      </>
+                    )}
                   </li>
                 ))}
               </ul>
