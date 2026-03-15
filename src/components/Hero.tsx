@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-end pb-[var(--space-xl)] px-[var(--space-md)]">
+    <section className="relative min-h-[100svh] flex items-end pb-[var(--space-lg)] md:pb-[var(--space-xl)] px-[var(--space-sm)] md:px-[var(--space-md)]">
       {/* Background image — back silhouette facing ocean */}
       <div className="absolute inset-0">
         <Image

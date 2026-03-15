@@ -77,7 +77,7 @@ export default function Skiing() {
                 {RESULTS.map((r, i) => (
                   <div
                     key={i}
-                    className="flex items-baseline justify-between py-5 border-b border-[var(--border)] gap-4"
+                    className="flex flex-col sm:flex-row sm:items-baseline justify-between py-5 border-b border-[var(--border)] gap-1 sm:gap-4"
                   >
                     <span className="text-[0.9rem] text-[var(--text-secondary)]">
                       {r.event}

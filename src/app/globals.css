@@ -136,6 +136,16 @@ body::before {
 @media (max-width: 768px) {
   .section-padding {
     padding: var(--space-lg) var(--space-sm);
+    padding-left: max(var(--space-sm), env(safe-area-inset-left));
+    padding-right: max(var(--space-sm), env(safe-area-inset-right));
+  }
+
+  .stat-number {
+    font-size: clamp(2rem, 12vw, 3.5rem);
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
   }
 }
 

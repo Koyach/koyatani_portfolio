@@ -44,7 +44,7 @@ export default function Contact() {
               href="https://calendar.app.google/riCES5AXDQzaAwF37"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--accent)] text-[var(--snow)] text-[0.85rem] font-medium tracking-wide rounded-lg hover:bg-[var(--accent-light)] transition-colors mb-8"
+              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 bg-[var(--accent)] text-[var(--snow)] text-[0.85rem] font-medium tracking-wide rounded-lg hover:bg-[var(--accent-light)] active:scale-[0.98] transition-[background-color,transform] mb-8"
             >
               <svg
                 aria-hidden="true"

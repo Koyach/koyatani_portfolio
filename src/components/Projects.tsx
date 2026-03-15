@@ -79,7 +79,7 @@ export default function Projects() {
 
               {/* Photos */}
               {project.image && (
-                <div className="flex gap-4 mb-10">
+                <div className="flex flex-col sm:flex-row gap-4 mb-10">
                   <div className="relative aspect-[2/1] rounded-lg overflow-hidden flex-1">
                     <Image
                       src={project.image}

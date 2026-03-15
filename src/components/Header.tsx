@@ -87,14 +87,14 @@ export default function Header() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <nav className="md:hidden border-t border-[var(--border)] bg-[var(--bg-primary)]/95 backdrop-blur-md">
-          <div className="flex flex-col px-[var(--space-md)] py-6 gap-5">
+        <nav className="md:hidden border-t border-[var(--border)] bg-[var(--bg-primary)]/95 backdrop-blur-md overscroll-contain">
+          <div className="flex flex-col px-[var(--space-sm)] py-4 gap-0">
             {NAV_ITEMS.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
                 onClick={() => setMenuOpen(false)}
-                className="text-[0.8rem] font-medium tracking-[0.15em] uppercase text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                className="text-[0.85rem] font-medium tracking-[0.15em] uppercase text-[var(--text-secondary)] hover:text-[var(--text-primary)] py-3.5 px-2 min-h-[44px] flex items-center"
               >
                 {item.label}
               </a>
