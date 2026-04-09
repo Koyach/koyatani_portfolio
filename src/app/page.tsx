@@ -8,10 +8,14 @@ import Skiing from "@/components/Skiing";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
+import CursorGlow from "@/components/CursorGlow";
+import OpeningMotion from "@/components/OpeningMotion";
 
 export default function Home() {
   return (
     <>
+      <OpeningMotion />
+      <CursorGlow />
       <Header />
       <main>
         <Hero />
