@@ -77,9 +77,9 @@ export const translations = {
       bedrock: {
         tag: "Startup",
         title: "Bedrock Space",
-        role: "共同創業・Chief of Staff（2026年2月〜現在）",
+        role: "共同創業・COO（2026年2月〜現在）",
         description:
-          "共同創業メンバーとして参画。CoS（Chief of Staff）として事業運営を推進中。",
+          "共同創業メンバーとして参画。COO（Chief Operating Officer）として事業運営を推進中。",
       },
       noto: {
         tag: "Past Project",
@@ -301,9 +301,9 @@ export const translations = {
       bedrock: {
         tag: "Startup",
         title: "Bedrock Space",
-        role: "Co-founder & Chief of Staff (Feb 2026 \u2013 Present)",
+        role: "Co-founder & COO (Feb 2026 \u2013 Present)",
         description:
-          "Joined as a co-founding member. Driving business operations as Chief of Staff (CoS).",
+          "Joined as a co-founding member. Driving business operations as COO (Chief Operating Officer).",
       },
       noto: {
         tag: "Past Project",
