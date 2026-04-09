@@ -91,14 +91,20 @@ body::before {
 }
 
 /* ── Scroll-triggered fade-in ─────────── */
+/* Only hide elements after JS is ready — prevents invisible content if JS is slow */
 
 .fade-in {
+  opacity: 1;
+  transform: none;
+}
+
+.js-ready .fade-in {
   opacity: 0;
   transform: translateY(24px);
   transition: opacity 0.7s ease-out, transform 0.7s ease-out;
 }
 
-.fade-in.visible {
+.js-ready .fade-in.visible {
   opacity: 1;
   transform: translateY(0);
 }
@@ -207,7 +213,7 @@ a {
 /* ── Reduced motion ───────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-  .fade-in {
+  .js-ready .fade-in {
     opacity: 1;
     transform: none;
     transition: none;

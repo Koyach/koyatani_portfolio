@@ -4,6 +4,9 @@ import { useEffect } from "react";
 
 export default function ScrollReveal() {
   useEffect(() => {
+    // Mark that JS has loaded — without this class, fade-in elements remain visible
+    document.documentElement.classList.add("js-ready");
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
