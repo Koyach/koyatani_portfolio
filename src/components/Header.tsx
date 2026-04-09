@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "@/lib/LanguageContext";
 
 export default function Header() {
   const { t, locale, toggleLocale } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
+  const menuRef = useRef<HTMLElement>(null);
 
   const NAV_ITEMS = [
     { label: t.nav.about, href: "#about" },
@@ -22,6 +24,28 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Active section tracking
+  useEffect(() => {
+    const sectionIds = NAV_ITEMS.map((item) => item.href.replace("#", ""));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActiveSection(`#${entry.target.id}`);
+          }
+        }
+      },
+      { rootMargin: "-40% 0px -60% 0px" }
+    );
+
+    for (const id of sectionIds) {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    }
+
+    return () => observer.disconnect();
+  });
 
   return (
     <>
@@ -52,7 +76,11 @@ export default function Header() {
               <a
                 key={item.href}
                 href={item.href}
-                className="text-[0.75rem] font-medium tracking-[0.15em] uppercase text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+                className={`text-[0.75rem] font-medium tracking-[0.15em] uppercase transition-colors hover:text-[var(--text-primary)] ${
+                  activeSection === item.href
+                    ? "text-[var(--accent)]"
+                    : "text-[var(--text-secondary)]"
+                }`}
               >
                 {item.label}
               </a>
@@ -104,22 +132,29 @@ export default function Header() {
         </div>
 
         {/* Mobile menu */}
-        {menuOpen && (
-          <nav className="md:hidden border-t border-[var(--border)] bg-[var(--bg-primary)]/95 backdrop-blur-md overscroll-contain">
-            <div className="flex flex-col px-[var(--space-sm)] py-4 gap-0">
-              {NAV_ITEMS.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMenuOpen(false)}
-                  className="text-[0.85rem] font-medium tracking-[0.15em] uppercase text-[var(--text-secondary)] hover:text-[var(--text-primary)] py-3.5 px-2 min-h-[44px] flex items-center"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
-          </nav>
-        )}
+        <nav
+          ref={menuRef}
+          className={`md:hidden border-t border-[var(--border)] bg-[var(--bg-primary)]/95 backdrop-blur-md overscroll-contain overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out ${
+            menuOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0 border-transparent"
+          }`}
+        >
+          <div className="flex flex-col px-[var(--space-sm)] py-4 gap-0">
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+                className={`text-[0.85rem] font-medium tracking-[0.15em] uppercase hover:text-[var(--text-primary)] py-3.5 px-2 min-h-[44px] flex items-center transition-colors ${
+                  activeSection === item.href
+                    ? "text-[var(--accent)]"
+                    : "text-[var(--text-secondary)]"
+                }`}
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+        </nav>
       </header>
     </>
   );
