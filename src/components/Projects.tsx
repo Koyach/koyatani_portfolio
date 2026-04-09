@@ -12,6 +12,7 @@ export default function Projects() {
       ...t.projects.mirakoe,
       image: "/images/miraisenkyo_photo.jpg",
       imageAlt: "Mirai Election",
+      url: "https://miracoe.org/",
     },
     {
       id: "bedrock",
@@ -20,6 +21,7 @@ export default function Projects() {
       stats: [],
       highlights: [],
       image: null,
+      url: "",
     },
     {
       id: "noto",
@@ -28,6 +30,7 @@ export default function Projects() {
       stats: [],
       highlights: [],
       image: null,
+      url: "",
     },
   ];
 
@@ -44,7 +47,32 @@ export default function Projects() {
                   {project.tag}
                 </span>
                 <h3 className="font-[family-name:var(--font-space-grotesk)] text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight mt-2">
-                  {project.title}
+                  {project.url ? (
+                    <a
+                      href={project.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-[var(--accent)] transition-colors"
+                    >
+                      {project.title}
+                      <svg
+                        aria-hidden="true"
+                        className="inline-block w-5 h-5 ml-2 text-[var(--text-tertiary)]"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
+                        />
+                      </svg>
+                    </a>
+                  ) : (
+                    project.title
+                  )}
                 </h3>
                 {project.subtitle && (
                   <p className="text-[var(--text-tertiary)] text-[0.9rem] mt-1">
