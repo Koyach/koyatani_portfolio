@@ -25,18 +25,37 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "谷昊埜 | Koya Tani",
+  metadataBase: new URL("https://koyatani.com"),
+  title: "谷昊埜 | Koya Tani — 慶應SFC / ミラコエ代表 / Bedrock Space COO",
   description:
-    "学生団体ミラコエ代表 / Bedrock Space CoS / フリースタイルスキーヤー。対話で社会を変える19歳のポートフォリオ。",
+    "谷昊埜（たにこうや）のポートフォリオ。慶應義塾大学SFC在学。学生団体ミラコエ代表として若者の政治参加を推進。Bedrock Space COO。元競技スキーヤー。",
+  keywords: ["谷昊埜", "たにこうや", "Koya Tani", "慶應SFC", "ミラコエ", "Bedrock Space"],
   openGraph: {
     title: "谷昊埜 | Koya Tani",
     description:
-      "学生団体ミラコエ代表 / Bedrock Space CoS / フリースタイルスキーヤー",
+      "慶應SFC在学。学生団体ミラコエ代表 / Bedrock Space COO / 元競技スキーヤー。",
     type: "website",
     locale: "ja_JP",
+    url: "https://koyatani.com",
+    siteName: "谷昊埜 Portfolio",
+    images: [
+      {
+        url: "/images/og.JPG",
+        width: 1200,
+        height: 630,
+        alt: "谷昊埜 | Koya Tani",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "谷昊埜 | Koya Tani",
+    description: "慶應SFC在学。学生団体ミラコエ代表 / Bedrock Space COO。",
+    images: ["/images/og.JPG"],
+    creator: "@koyach777",
   },
   alternates: {
-    canonical: "https://koyataniportfolio.vercel.app",
+    canonical: "https://koyatani.com",
   },
   other: {
     "theme-color": "#0c0f14",
@@ -48,7 +67,8 @@ const jsonLd = {
   "@type": "Person",
   name: "谷昊埜",
   alternateName: "Koya Tani",
-  url: "https://koyataniportfolio.vercel.app",
+  url: "https://koyatani.com",
+  image: "https://koyatani.com/images/og.JPG",
   jobTitle: "Student / Entrepreneur",
   affiliation: [
     {
@@ -93,7 +113,7 @@ export default function RootLayout({
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
         <meta name="theme-color" content="#0c0f14" />
-        <meta name="google-site-verification" content="LX89mHeu0dMOzAywtjVxX-g1kHee3EzhxskKCucGCTU" />
+        <meta name="google-site-verification" content="8ZkEJ-lThcmV9gYsTMnQgZQTwCtUqG38j-c3dvHAUCk" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
