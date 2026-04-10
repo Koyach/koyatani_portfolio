@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import CursorGlow from "@/components/CursorGlow";
 import OpeningMotion from "@/components/OpeningMotion";
+import LatestPost from "@/components/LatestPost";
 
 export default function Home() {
   return (
@@ -23,6 +24,8 @@ export default function Home() {
         <About />
         <hr className="divider" />
         <Projects />
+        <hr className="divider" />
+        <LatestPost />
         <hr className="divider" />
         <Achievements />
         <hr className="divider" />

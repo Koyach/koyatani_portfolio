@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { useLanguage } from "@/lib/LanguageContext";
 
 export default function Header() {
@@ -85,6 +86,12 @@ export default function Header() {
                 {item.label}
               </a>
             ))}
+            <Link
+              href="/blog"
+              className="text-[0.75rem] font-medium tracking-[0.15em] uppercase text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+            >
+              Blog
+            </Link>
             {/* Language toggle */}
             <button
               onClick={toggleLocale}
@@ -153,6 +160,13 @@ export default function Header() {
                 {item.label}
               </a>
             ))}
+            <Link
+              href="/blog"
+              onClick={() => setMenuOpen(false)}
+              className="text-[0.85rem] font-medium tracking-[0.15em] uppercase text-[var(--text-secondary)] hover:text-[var(--text-primary)] py-3.5 px-2 min-h-[44px] flex items-center transition-colors"
+            >
+              Blog
+            </Link>
           </div>
         </nav>
       </header>
