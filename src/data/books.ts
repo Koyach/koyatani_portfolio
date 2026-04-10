@@ -62,7 +62,7 @@ export const books: Book[] = [
     comment: "顧客が本当に求めているのは「手段」ではなく「結果」。マーケティングの本質がわかる。",
     genre: "Marketing",
     cover: "/images/books/drill-hole.jpg",
-    amazonUrl: "https://www.amazon.co.jp/dp/4413036018",
+    amazonUrl: "https://www.amazon.co.jp/%E3%83%89%E3%83%AA%E3%83%AB%E3%82%92%E5%A3%B2%E3%82%8B%E3%81%AB%E3%81%AF%E7%A9%B4%E3%82%92%E5%A3%B2%E3%82%8C-%E4%BD%90%E8%97%A4-%E7%BE%A9%E5%85%B8/dp/4413036239",
   },
   {
     slug: "mintzberg",
