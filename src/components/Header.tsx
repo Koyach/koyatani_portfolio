@@ -177,6 +177,16 @@ export default function Header() {
                   </span>
                   Blog
                 </Link>
+                <Link
+                  href="/bookshelf"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 px-5 py-3 text-[0.85rem] font-medium tracking-[0.1em] uppercase text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--snow-dim)] transition-colors"
+                >
+                  <span className="font-[family-name:var(--font-dm-mono)] text-[0.6rem] text-[var(--text-tertiary)] w-5">
+                    →
+                  </span>
+                  Bookshelf
+                </Link>
               </div>
 
               <div className="px-5 py-2.5 border-t border-[var(--border)] flex items-center gap-2">
