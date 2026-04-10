@@ -71,7 +71,7 @@ export const books: Book[] = [
     comment: "組織の5つの基本形。ミラコエの組織設計で実際に参考にした。",
     genre: "Management",
     cover: "/images/books/mintzberg.jpg",
-    amazonUrl: "https://www.amazon.co.jp/dp/4478024537",
+    amazonUrl: "https://www.amazon.co.jp/%E3%83%9F%E3%83%B3%E3%83%84%E3%83%90%E3%83%BC%E3%82%B0%E3%81%AE%E7%B5%84%E7%B9%94%E8%AB%96-%EF%BC%97%E3%81%A4%E3%81%AE%E9%A1%9E%E5%9E%8B%E3%81%A8%E5%8A%9B%E5%AD%A6%E3%80%81%E3%81%9D%E3%81%97%E3%81%A6%E3%81%9D%E3%81%AE%E5%85%88%E3%81%B8-%E3%83%98%E3%83%B3%E3%83%AA%E3%83%BC%E3%83%BB%E3%83%9F%E3%83%B3%E3%83%84%E3%83%90%E3%83%BC%E3%82%B0/dp/4478118167",
   },
 ];
 
