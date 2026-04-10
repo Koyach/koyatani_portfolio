@@ -9,6 +9,13 @@ export default function OpeningMotion() {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
+    // Only show on first visit in this browser session
+    if (sessionStorage.getItem("opening-shown")) {
+      setDone(true);
+      return;
+    }
+    sessionStorage.setItem("opening-shown", "1");
+
     const overlay = overlayRef.current;
     const counter = counterRef.current;
     if (!overlay || !counter) return;

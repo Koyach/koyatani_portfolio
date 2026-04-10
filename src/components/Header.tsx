@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/lib/LanguageContext";
 
@@ -9,7 +9,6 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
-  const menuRef = useRef<HTMLElement>(null);
 
   const NAV_ITEMS = [
     { label: t.nav.about, href: "#about" },
@@ -48,6 +47,23 @@ export default function Header() {
     return () => observer.disconnect();
   });
 
+  // Close menu on escape
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handleKey);
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKey);
+    };
+  }, [menuOpen]);
+
   return (
     <>
       <a
@@ -58,7 +74,7 @@ export default function Header() {
       </a>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-500 ${
-          scrolled
+          scrolled || menuOpen
             ? "bg-[var(--bg-primary)]/90 backdrop-blur-md border-b border-[var(--border)]"
             : "bg-transparent"
         }`}
@@ -71,42 +87,11 @@ export default function Header() {
             K.T.
           </a>
 
-          {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-8">
-            {NAV_ITEMS.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className={`text-[0.75rem] font-medium tracking-[0.15em] uppercase transition-colors hover:text-[var(--text-primary)] ${
-                  activeSection === item.href
-                    ? "text-[var(--accent)]"
-                    : "text-[var(--text-secondary)]"
-                }`}
-              >
-                {item.label}
-              </a>
-            ))}
-            <Link
-              href="/blog"
-              className="text-[0.75rem] font-medium tracking-[0.15em] uppercase text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
-            >
-              Blog
-            </Link>
-            {/* Language toggle */}
+          {/* Right side: language toggle + hamburger */}
+          <div className="flex items-center gap-3">
             <button
               onClick={toggleLocale}
-              className="font-[family-name:var(--font-dm-mono)] text-[0.75rem] tracking-wider text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors border border-[var(--border)] hover:border-[var(--border-hover)] px-3 py-1 rounded-full"
-              aria-label={locale === "ja" ? "Switch to English" : "日本語に切替"}
-            >
-              {locale === "ja" ? "EN" : "JA"}
-            </button>
-          </nav>
-
-          {/* Mobile: language toggle + hamburger */}
-          <div className="md:hidden flex items-center gap-3">
-            <button
-              onClick={toggleLocale}
-              className="font-[family-name:var(--font-dm-mono)] text-[0.7rem] tracking-wider text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors border border-[var(--border)] px-2.5 py-1 rounded-full"
+              className="font-[family-name:var(--font-dm-mono)] text-[0.7rem] tracking-wider text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors border border-[var(--border)] hover:border-[var(--border-hover)] px-2.5 py-1 rounded-full"
               aria-label={locale === "ja" ? "Switch to English" : "日本語に切替"}
             >
               {locale === "ja" ? "EN" : "JA"}
@@ -118,58 +103,93 @@ export default function Header() {
             >
               <span
                 aria-hidden="true"
-                className={`block h-[1.5px] w-5 bg-[var(--text-primary)] transition-transform ${
+                className={`block h-[1.5px] w-5 bg-[var(--text-primary)] transition-transform duration-300 ${
                   menuOpen ? "translate-y-[6.5px] rotate-45" : ""
                 }`}
               />
               <span
                 aria-hidden="true"
-                className={`block h-[1.5px] w-5 bg-[var(--text-primary)] transition-opacity ${
+                className={`block h-[1.5px] w-5 bg-[var(--text-primary)] transition-opacity duration-300 ${
                   menuOpen ? "opacity-0" : ""
                 }`}
               />
               <span
                 aria-hidden="true"
-                className={`block h-[1.5px] w-5 bg-[var(--text-primary)] transition-transform ${
+                className={`block h-[1.5px] w-5 bg-[var(--text-primary)] transition-transform duration-300 ${
                   menuOpen ? "-translate-y-[6.5px] -rotate-45" : ""
                 }`}
               />
             </button>
           </div>
         </div>
+      </header>
 
-        {/* Mobile menu */}
+      {/* Full overlay menu */}
+      <div
+        className={`fixed inset-0 z-40 transition-opacity duration-300 ${
+          menuOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
+      >
+        {/* Backdrop */}
+        <div
+          className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+          onClick={() => setMenuOpen(false)}
+        />
+
+        {/* Menu panel */}
         <nav
-          ref={menuRef}
-          className={`md:hidden border-t border-[var(--border)] bg-[var(--bg-primary)]/95 backdrop-blur-md overscroll-contain overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out ${
-            menuOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0 border-transparent"
+          className={`absolute top-[60px] right-4 md:right-8 w-[min(320px,calc(100vw-2rem))] bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl overflow-hidden shadow-2xl transition-transform duration-300 origin-top-right ${
+            menuOpen ? "scale-100" : "scale-95"
           }`}
         >
-          <div className="flex flex-col px-[var(--space-sm)] py-4 gap-0">
+          <div className="py-3">
             {NAV_ITEMS.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
                 onClick={() => setMenuOpen(false)}
-                className={`text-[0.85rem] font-medium tracking-[0.15em] uppercase hover:text-[var(--text-primary)] py-3.5 px-2 min-h-[44px] flex items-center transition-colors ${
+                className={`flex items-center gap-3 px-6 py-3.5 text-[0.85rem] font-medium tracking-[0.1em] uppercase transition-colors hover:bg-[var(--snow-dim)] ${
                   activeSection === item.href
                     ? "text-[var(--accent)]"
-                    : "text-[var(--text-secondary)]"
+                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                 }`}
               >
+                <span className="font-[family-name:var(--font-dm-mono)] text-[0.6rem] text-[var(--text-tertiary)] w-5">
+                  {String(NAV_ITEMS.indexOf(item) + 1).padStart(2, "0")}
+                </span>
                 {item.label}
               </a>
             ))}
+
+            {/* Divider */}
+            <div className="mx-6 my-2 h-[1px] bg-[var(--border)]" />
+
+            {/* Blog */}
             <Link
               href="/blog"
               onClick={() => setMenuOpen(false)}
-              className="text-[0.85rem] font-medium tracking-[0.15em] uppercase text-[var(--text-secondary)] hover:text-[var(--text-primary)] py-3.5 px-2 min-h-[44px] flex items-center transition-colors"
+              className="flex items-center gap-3 px-6 py-3.5 text-[0.85rem] font-medium tracking-[0.1em] uppercase text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--snow-dim)] transition-colors"
             >
+              <span className="font-[family-name:var(--font-dm-mono)] text-[0.6rem] text-[var(--text-tertiary)] w-5">
+                →
+              </span>
               Blog
             </Link>
           </div>
+
+          {/* Cmd+K hint */}
+          <div className="px-6 py-3 border-t border-[var(--border)] flex items-center gap-2">
+            <kbd className="font-[family-name:var(--font-dm-mono)] text-[0.55rem] text-[var(--text-tertiary)] border border-[var(--border)] px-1.5 py-0.5 rounded">
+              ⌘K
+            </kbd>
+            <span className="font-[family-name:var(--font-dm-mono)] text-[0.6rem] text-[var(--text-tertiary)]">
+              Quick search
+            </span>
+          </div>
         </nav>
-      </header>
+      </div>
     </>
   );
 }
