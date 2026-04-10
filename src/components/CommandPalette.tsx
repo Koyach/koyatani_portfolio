@@ -28,6 +28,7 @@ export default function CommandPalette() {
     { id: "contact", label: "Contact", sublabel: "SNS & scheduling", category: "Sections", action: () => navigate("#contact") },
     // Pages
     { id: "blog", label: "Blog", sublabel: "Thoughts & notes", category: "Pages", action: () => router.push("/blog") },
+    { id: "bookshelf", label: "Bookshelf", sublabel: "Recommended books", category: "Pages", action: () => router.push("/bookshelf") },
     { id: "p-mirakoe", label: "Mirakoe", sublabel: "Project detail", category: "Projects", action: () => router.push("/projects/mirakoe") },
     { id: "p-bedrock", label: "Bedrock Space", sublabel: "Project detail", category: "Projects", action: () => router.push("/projects/bedrock-space") },
     { id: "p-noto", label: "Noto Lacquerware", sublabel: "Project detail", category: "Projects", action: () => router.push("/projects/noto") },

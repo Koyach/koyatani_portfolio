@@ -88,7 +88,7 @@ export default function BlogArticle({ post }: { post: BlogPost }) {
       <main className="pt-24 pb-20">
         <article className="mx-auto max-w-[var(--max-text)] px-[var(--space-md)]">
           <header className="mb-12">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex flex-wrap items-center gap-3 mb-6">
               <time className="font-[family-name:var(--font-dm-mono)] text-[0.75rem] text-[var(--text-tertiary)]">
                 {post.date}
               </time>
@@ -101,10 +101,10 @@ export default function BlogArticle({ post }: { post: BlogPost }) {
                 </span>
               ))}
             </div>
-            <h1 className="font-[family-name:var(--font-space-grotesk)] text-[clamp(1.8rem,5vw,2.8rem)] font-bold leading-tight">
+            <h1 className="font-[family-name:var(--font-space-grotesk)] text-[clamp(1.5rem,4vw,2.2rem)] font-bold leading-[1.3] tracking-tight">
               {post.title}
             </h1>
-            <p className="text-[1rem] text-[var(--text-tertiary)] mt-3">
+            <p className="text-[0.9rem] text-[var(--text-tertiary)] mt-4 leading-relaxed">
               {post.description}
             </p>
           </header>

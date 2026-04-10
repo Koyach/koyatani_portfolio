@@ -6,9 +6,13 @@ import gsap from "gsap";
 export default function OpeningMotion() {
   const overlayRef = useRef<HTMLDivElement>(null);
   const counterRef = useRef<HTMLSpanElement>(null);
-  const [done, setDone] = useState(false);
+  const alreadyShown = typeof window !== "undefined" && sessionStorage.getItem("opening-shown") === "1";
+  const [done, setDone] = useState(alreadyShown);
 
   useEffect(() => {
+    if (alreadyShown) return;
+    sessionStorage.setItem("opening-shown", "1");
+
     const overlay = overlayRef.current;
     const counter = counterRef.current;
     if (!overlay || !counter) return;
@@ -80,7 +84,7 @@ export default function OpeningMotion() {
       tl.kill();
       document.body.style.overflow = "";
     };
-  }, []);
+  }, [alreadyShown]);
 
   if (done) return null;
 
