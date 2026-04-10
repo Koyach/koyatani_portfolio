@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useLanguage } from "@/lib/LanguageContext";
 
 export default function Projects() {
@@ -9,6 +10,7 @@ export default function Projects() {
   const projects = [
     {
       id: "mirakoe",
+      slug: "mirakoe",
       ...t.projects.mirakoe,
       image: "/images/miraisenkyo_photo.jpg",
       imageAlt: "Mirai Election",
@@ -16,6 +18,7 @@ export default function Projects() {
     },
     {
       id: "bedrock",
+      slug: "bedrock-space",
       ...t.projects.bedrock,
       subtitle: "",
       stats: [],
@@ -25,6 +28,7 @@ export default function Projects() {
     },
     {
       id: "noto",
+      slug: "noto",
       ...t.projects.noto,
       subtitle: "",
       stats: [],
@@ -152,6 +156,28 @@ export default function Projects() {
                   {project.reflection}
                 </blockquote>
               )}
+
+              <div className="mt-8">
+                <Link
+                  href={`/projects/${project.slug}`}
+                  className="inline-flex items-center gap-2 text-[0.85rem] text-[var(--text-tertiary)] hover:text-[var(--accent)] transition-colors font-[family-name:var(--font-dm-mono)] tracking-wider"
+                >
+                  Read more
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                    />
+                  </svg>
+                </Link>
+              </div>
             </article>
           ))}
         </div>

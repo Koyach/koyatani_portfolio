@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP, DM_Mono, Space_Grotesk } from "next/font/google";
 import { LanguageProvider } from "@/lib/LanguageContext";
+import CommandPalette from "@/components/CommandPalette";
 import "./globals.css";
 
 const notoSans = Noto_Sans_JP({
@@ -122,7 +123,10 @@ export default function RootLayout({
       <body
         className={`${notoSans.variable} ${dmMono.variable} ${spaceGrotesk.variable} antialiased`}
       >
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          {children}
+          <CommandPalette />
+        </LanguageProvider>
       </body>
     </html>
   );
