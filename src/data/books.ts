@@ -37,6 +37,42 @@ export const books: Book[] = [
     cover: "/images/books/sapiens.jpg",
     amazonUrl: "https://www.amazon.co.jp/dp/430922671X",
   },
+  {
+    slug: "essentialism",
+    title: "エッセンシャル思考",
+    author: "グレッグ・マキューン",
+    comment: "「より少なく、しかしより良く」。やることを絞る勇気をくれた一冊。",
+    genre: "Business",
+    cover: "/images/books/essentialism.jpg",
+    amazonUrl: "https://www.amazon.co.jp/dp/4761270438",
+  },
+  {
+    slug: "non-designers-design-book",
+    title: "ノンデザイナーズ・デザインブック",
+    author: "Robin Williams",
+    comment: "近接・整列・反復・コントラスト。デザインの4原則を知るだけで、アウトプットの質が変わる。",
+    genre: "Design",
+    cover: "/images/books/non-designers-design-book.jpg",
+    amazonUrl: "https://www.amazon.co.jp/dp/4839955557",
+  },
+  {
+    slug: "drill-hole",
+    title: "ドリルを売るには穴を売れ",
+    author: "佐藤義典",
+    comment: "顧客が本当に求めているのは「手段」ではなく「結果」。マーケティングの本質がわかる。",
+    genre: "Marketing",
+    cover: "/images/books/drill-hole.jpg",
+    amazonUrl: "https://www.amazon.co.jp/dp/4413036018",
+  },
+  {
+    slug: "mintzberg",
+    title: "ミンツバーグの組織論",
+    author: "ヘンリー・ミンツバーグ",
+    comment: "組織の5つの基本形。ミラコエの組織設計で実際に参考にした。",
+    genre: "Management",
+    cover: "/images/books/mintzberg.jpg",
+    amazonUrl: "https://www.amazon.co.jp/dp/4478024537",
+  },
 ];
 
 export const genres = [...new Set(books.map((b) => b.genre))];
