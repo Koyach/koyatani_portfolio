@@ -1,8 +1,13 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
     Credentials({
       name: "Admin Login",
       credentials: {
@@ -27,6 +32,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/admin/login",
   },
   callbacks: {
+    async signIn({ account, profile }) {
+      // Google認証の場合、ADMIN_EMAILと一致するか確認
+      if (account?.provider === "google") {
+        return profile?.email === process.env.ADMIN_EMAIL;
+      }
+      return true;
+    },
     authorized({ auth: session, request }) {
       const isAdmin = request.nextUrl.pathname.startsWith("/admin");
       const isLoginPage = request.nextUrl.pathname === "/admin/login";
