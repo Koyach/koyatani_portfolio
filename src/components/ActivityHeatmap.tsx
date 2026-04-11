@@ -104,11 +104,11 @@ export default function ActivityHeatmap() {
 
   return (
     <section className="section-padding" id="activity">
-      <div className="max-w-[var(--max-content)] mx-auto">
-        <p className="section-label fade-in">
+      <div className="max-w-[var(--max-content)] mx-auto animate-fade-in-up">
+        <p className="section-label">
           {locale === "ja" ? "Activity" : "Activity"}
         </p>
-        <div className="flex items-baseline gap-4 mb-6 fade-in">
+        <div className="flex items-baseline gap-4 mb-6">
           <h2
             className="text-2xl md:text-3xl font-bold"
             style={{ color: "var(--text-primary)" }}
@@ -123,7 +123,7 @@ export default function ActivityHeatmap() {
         </div>
 
         <div
-          className="fade-in overflow-x-auto pb-2"
+          className="overflow-x-auto pb-2"
           style={{ position: "relative" }}
         >
           <svg

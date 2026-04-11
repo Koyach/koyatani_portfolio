@@ -64,9 +64,21 @@ export default function CVPage() {
           <h2 className="text-lg font-bold border-b border-gray-300 pb-1 mb-3">
             {locale === "ja" ? "学歴" : "Education"}
           </h2>
-          <div className="text-sm space-y-1">
-            <p className="font-medium">{t.about.academics1}</p>
-            <p className="text-gray-600">{t.about.academics2}</p>
+          <div className="text-sm space-y-3">
+            <div>
+              <p className="font-medium">{t.about.academics1}</p>
+              <p className="text-gray-600">{t.about.academics2}</p>
+            </div>
+            <div>
+              <p className="font-medium">
+                {locale === "ja" ? "同志社高等学校（2022年4月〜2025年3月）" : "Doshisha Senior High School (Apr 2022 – Mar 2025)"}
+              </p>
+              <p className="text-gray-600">
+                {locale === "ja"
+                  ? "岩倉祭 総監督（高1）・分団長（高3）/ JOFキャンプリーダーボランティア / 吉本新喜劇 主演（高2）"
+                  : "Iwakura Festival Director (Y1) & Division Leader (Y3) / JOF Camp Leader Volunteer"}
+              </p>
+            </div>
           </div>
         </section>
 

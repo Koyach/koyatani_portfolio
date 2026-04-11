@@ -114,6 +114,15 @@ body::before {
 .fade-in-delay-3 { transition-delay: 0.3s; }
 .fade-in-delay-4 { transition-delay: 0.4s; }
 
+/* ── CSS animation for dynamically loaded components ── */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.7s ease-out both;
+}
+
 /* ── Big numbers — editorial data style ── */
 
 .stat-number {
