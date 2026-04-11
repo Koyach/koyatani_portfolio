@@ -12,6 +12,7 @@ import CursorGlow from "@/components/CursorGlow";
 import OpeningMotion from "@/components/OpeningMotion";
 import LatestPost from "@/components/LatestPost";
 import ChatWidget from "@/components/ChatWidget";
+import ActivityHeatmap from "@/components/ActivityHeatmap";
 
 export default function Home() {
   return (
@@ -25,6 +26,8 @@ export default function Home() {
         <About />
         <hr className="divider" />
         <Projects />
+        <hr className="divider" />
+        <ActivityHeatmap />
         <hr className="divider" />
         <LatestPost />
         <hr className="divider" />
