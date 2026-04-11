@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Sans_JP, DM_Mono, Space_Grotesk } from "next/font/google";
 import { LanguageProvider } from "@/lib/LanguageContext";
 import CommandPalette from "@/components/CommandPalette";
+import PageTracker from "@/components/PageTracker";
 import "./globals.css";
 
 const notoSans = Noto_Sans_JP({
@@ -124,6 +125,7 @@ export default function RootLayout({
         className={`${notoSans.variable} ${dmMono.variable} ${spaceGrotesk.variable} antialiased`}
       >
         <LanguageProvider>
+          <PageTracker />
           {children}
           <CommandPalette />
         </LanguageProvider>
