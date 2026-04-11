@@ -217,9 +217,16 @@ export const translations = {
       label: "Contact",
       heading: "話しましょう。",
       description:
-        "取材・登壇・協業のご相談など、お気軽にSNSからご連絡ください。",
+        "取材・登壇・協業のご相談など、お気軽にご連絡ください。",
       scheduleButton: "日程を調整する",
       photoAlt: "谷昊埜 — 海を見つめる後ろ姿",
+      formName: "お名前",
+      formEmail: "メールアドレス",
+      formMessage: "メッセージ",
+      formSubmit: "送信する",
+      formSending: "送信中...",
+      formSuccess: "送信しました。ありがとうございます。",
+      formError: "送信に失敗しました。もう一度お試しください。",
     },
 
     // Footer
@@ -441,9 +448,16 @@ export const translations = {
       label: "Contact",
       heading: "Let\u2019s talk.",
       description:
-        "For press, speaking, or collaboration inquiries, feel free to reach out via social media.",
+        "For press, speaking, or collaboration inquiries, feel free to reach out.",
       scheduleButton: "Schedule a Meeting",
       photoAlt: "Koya Tani \u2014 Looking out at the ocean",
+      formName: "Name",
+      formEmail: "Email",
+      formMessage: "Message",
+      formSubmit: "Send",
+      formSending: "Sending...",
+      formSuccess: "Sent successfully. Thank you!",
+      formError: "Failed to send. Please try again.",
     },
 
     footer: {

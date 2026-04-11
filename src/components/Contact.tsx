@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { useLanguage } from "@/lib/LanguageContext";
 
@@ -26,15 +27,44 @@ const LINKS = [
   },
 ];
 
+type FormStatus = "idle" | "sending" | "success" | "error";
+
 export default function Contact() {
   const { t } = useLanguage();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<FormStatus>("idle");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus("sending");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      setStatus("success");
+      setName("");
+      setEmail("");
+      setMessage("");
+    } catch {
+      setStatus("error");
+    }
+  }
 
   return (
     <section id="contact" className="section-padding">
       <div className="mx-auto max-w-[var(--max-content)]">
         <div className="section-label fade-in">{t.contact.label}</div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-[var(--space-lg)] items-end">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-[var(--space-lg)] items-start">
+          {/* Left: Form + Photo */}
           <div className="fade-in fade-in-delay-1">
             <h2 className="font-[family-name:var(--font-space-grotesk)] text-[clamp(1.8rem,4vw,3rem)] font-bold leading-tight mb-6">
               {t.contact.heading}
@@ -43,11 +73,84 @@ export default function Contact() {
               {t.contact.description}
             </p>
 
+            {/* Contact Form */}
+            <form onSubmit={handleSubmit} className="space-y-4 mb-8">
+              <div>
+                <label
+                  htmlFor="contact-name"
+                  className="block text-[0.8rem] text-[var(--text-tertiary)] mb-1.5 font-medium"
+                >
+                  {t.contact.formName}
+                </label>
+                <input
+                  id="contact-name"
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-4 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[0.9rem] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="contact-email"
+                  className="block text-[0.8rem] text-[var(--text-tertiary)] mb-1.5 font-medium"
+                >
+                  {t.contact.formEmail}
+                </label>
+                <input
+                  id="contact-email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[0.9rem] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="contact-message"
+                  className="block text-[0.8rem] text-[var(--text-tertiary)] mb-1.5 font-medium"
+                >
+                  {t.contact.formMessage}
+                </label>
+                <textarea
+                  id="contact-message"
+                  required
+                  rows={5}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className="w-full px-4 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[0.9rem] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:border-[var(--accent)] transition-colors resize-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={status === "sending"}
+                className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 bg-[var(--accent)] text-[var(--snow)] text-[0.85rem] font-medium tracking-wide rounded-lg hover:bg-[var(--accent-light)] active:scale-[0.98] transition-[background-color,transform] disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {status === "sending"
+                  ? t.contact.formSending
+                  : t.contact.formSubmit}
+              </button>
+
+              {status === "success" && (
+                <p className="text-[0.85rem] text-green-400">
+                  {t.contact.formSuccess}
+                </p>
+              )}
+              {status === "error" && (
+                <p className="text-[0.85rem] text-red-400">
+                  {t.contact.formError}
+                </p>
+              )}
+            </form>
+
             <a
               href="https://calendar.app.google/riCES5AXDQzaAwF37"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 bg-[var(--accent)] text-[var(--snow)] text-[0.85rem] font-medium tracking-wide rounded-lg hover:bg-[var(--accent-light)] active:scale-[0.98] transition-[background-color,transform] mb-8"
+              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 border border-[var(--border)] text-[var(--text-secondary)] text-[0.85rem] font-medium tracking-wide rounded-lg hover:border-[var(--accent)] hover:text-[var(--accent)] active:scale-[0.98] transition-[border-color,color,transform] mb-8"
             >
               <svg
                 aria-hidden="true"
@@ -78,6 +181,7 @@ export default function Contact() {
             </div>
           </div>
 
+          {/* Right: SNS Links */}
           <div className="fade-in fade-in-delay-2">
             <ul className="space-y-0">
               {LINKS.map((link) => (
