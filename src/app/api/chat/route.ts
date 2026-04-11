@@ -1,8 +1,9 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { headers } from "next/headers";
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+const client = new OpenAI({
+  apiKey: process.env.DEEPSEEK_API_KEY,
+  baseURL: "https://api.deepseek.com",
 });
 
 // In-memory rate limiter: max 10 requests per IP per minute
@@ -105,22 +106,23 @@ export async function POST(request: Request) {
     content: String(m.content).slice(0, 500),
   }));
 
-  const stream = anthropic.messages.stream({
-    model: "claude-haiku-4-5-20251001",
+  const stream = await client.chat.completions.create({
+    model: "deepseek-chat",
     max_tokens: 512,
-    system: SYSTEM_PROMPT,
-    messages: trimmed,
+    stream: true,
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      ...trimmed,
+    ],
   });
 
   const readableStream = new ReadableStream({
     async start(controller) {
       const encoder = new TextEncoder();
-      for await (const event of stream) {
-        if (
-          event.type === "content_block_delta" &&
-          event.delta.type === "text_delta"
-        ) {
-          controller.enqueue(encoder.encode(event.delta.text));
+      for await (const chunk of stream) {
+        const text = chunk.choices[0]?.delta?.content;
+        if (text) {
+          controller.enqueue(encoder.encode(text));
         }
       }
       controller.close();

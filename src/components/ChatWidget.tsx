@@ -164,7 +164,7 @@ export default function ChatWidget() {
                 {chat.title}
               </div>
               <div className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-                Powered by Claude
+                Powered by DeepSeek
               </div>
             </div>
           </div>
