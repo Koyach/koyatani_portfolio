@@ -31,3 +31,10 @@ model PageView {
   @@index([createdAt])
   @@index([path])
 }
+
+model SiteStatus {
+  id        String   @id @default("singleton")
+  text      String
+  emoji     String   @default("")
+  updatedAt DateTime @updatedAt
+}
