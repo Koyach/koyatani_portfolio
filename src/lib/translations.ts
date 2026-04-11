@@ -234,6 +234,16 @@ export const translations = {
       copyright: "\u00a9 2026 Koya Tani",
       builtWith: "Built with Next.js",
     },
+
+    // Chat
+    chat: {
+      title: "質問する",
+      placeholder: "昊埜について何でも聞いてください...",
+      send: "送信",
+      greeting: "こんにちは！谷昊埜について何か聞きたいことはありますか？",
+      error: "エラーが発生しました。もう一度お試しください。",
+      rateLimit: "リクエストが多すぎます。少し待ってから再度お試しください。",
+    },
   },
 
   en: {
@@ -463,6 +473,15 @@ export const translations = {
     footer: {
       copyright: "\u00a9 2026 Koya Tani",
       builtWith: "Built with Next.js",
+    },
+
+    chat: {
+      title: "Ask me",
+      placeholder: "Ask anything about Koya...",
+      send: "Send",
+      greeting: "Hi! Have any questions about Koya Tani?",
+      error: "Something went wrong. Please try again.",
+      rateLimit: "Too many requests. Please wait a moment.",
     },
   },
 } as const;
