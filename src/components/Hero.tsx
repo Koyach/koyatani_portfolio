@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useLanguage } from "@/lib/LanguageContext";
+import StatusBadge from "@/components/StatusBadge";
 
 export default function Hero() {
   const { t } = useLanguage();
@@ -24,9 +25,12 @@ export default function Hero() {
 
       <div className="relative mx-auto w-full max-w-[var(--max-content)]">
         <div className="mb-8">
-          <p className="text-[0.7rem] font-medium tracking-[0.25em] uppercase text-[var(--accent)] mb-6">
-            {t.hero.badge}
-          </p>
+          <div className="flex items-center gap-4 mb-6">
+            <p className="text-[0.7rem] font-medium tracking-[0.25em] uppercase text-[var(--accent)]">
+              {t.hero.badge}
+            </p>
+            <StatusBadge />
+          </div>
           <h1 className="font-[family-name:var(--font-space-grotesk)] text-[clamp(3rem,10vw,8rem)] font-bold leading-[0.9] tracking-tight">
             {t.hero.name}
           </h1>
