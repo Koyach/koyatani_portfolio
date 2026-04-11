@@ -11,6 +11,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import CursorGlow from "@/components/CursorGlow";
 import OpeningMotion from "@/components/OpeningMotion";
 import LatestPost from "@/components/LatestPost";
+import ChatWidget from "@/components/ChatWidget";
 
 export default function Home() {
   return (
@@ -37,6 +38,7 @@ export default function Home() {
       </main>
       <Footer />
       <ScrollReveal />
+      <ChatWidget />
     </>
   );
 }
