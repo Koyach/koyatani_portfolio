@@ -29,7 +29,9 @@ export default function LiveVisitors() {
     };
   }, []);
 
-  if (count === null || count === 0) return null;
+  if (count === null) return null;
+
+  const displayCount = Math.max(count, 1); // At least 1 (the current viewer)
 
   return (
     <div className="flex items-center gap-2">
@@ -41,7 +43,7 @@ export default function LiveVisitors() {
         className="text-xs font-mono"
         style={{ color: "var(--text-tertiary)" }}
       >
-        {count} {count === 1 ? "visitor" : "visitors"} now
+        {displayCount} {displayCount === 1 ? "visitor" : "visitors"} now
       </span>
     </div>
   );

@@ -16,7 +16,8 @@ export default function StatusBadge() {
       .catch(() => {});
   }, []);
 
-  if (!status || !status.text) return null;
+  const displayText = status?.text || "Online";
+  const displayEmoji = status?.emoji || "";
 
   return (
     <div
@@ -31,8 +32,8 @@ export default function StatusBadge() {
         className="w-1.5 h-1.5 rounded-full animate-pulse"
         style={{ background: "var(--accent)" }}
       />
-      {status.emoji && <span>{status.emoji}</span>}
-      <span className="font-mono text-[0.7rem]">{status.text}</span>
+      {displayEmoji && <span>{displayEmoji}</span>}
+      <span className="font-mono text-[0.7rem]">{displayText}</span>
     </div>
   );
 }

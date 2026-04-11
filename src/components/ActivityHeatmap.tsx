@@ -35,14 +35,41 @@ export default function ActivityHeatmap() {
   const [data, setData] = useState<{ totalContributions: number; days: DayData[] } | null>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; text: string } | null>(null);
 
+  const [error, setError] = useState(false);
+
   useEffect(() => {
     fetch("/api/github")
-      .then((r) => r.json())
-      .then(setData)
-      .catch(() => {});
+      .then((r) => {
+        if (!r.ok) throw new Error("API error");
+        return r.json();
+      })
+      .then((d) => {
+        if (d.error) {
+          setError(true);
+        } else {
+          setData(d);
+        }
+      })
+      .catch(() => setError(true));
   }, []);
 
-  if (!data || data.days.length === 0) return null;
+  if (!data || data.days.length === 0) {
+    if (error) {
+      return (
+        <section className="section-padding" id="activity">
+          <div className="max-w-[var(--max-content)] mx-auto">
+            <p className="section-label fade-in">Activity</p>
+            <p className="text-sm fade-in" style={{ color: "var(--text-tertiary)" }}>
+              {locale === "ja"
+                ? "GitHub活動データを読み込めませんでした"
+                : "Could not load GitHub activity data"}
+            </p>
+          </div>
+        </section>
+      );
+    }
+    return null;
+  }
 
   const monthLabels = locale === "ja" ? MONTH_LABELS_JA : MONTH_LABELS_EN;
   const maxCount = Math.max(...data.days.map((d) => d.count), 1);
