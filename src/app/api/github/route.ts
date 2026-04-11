@@ -44,10 +44,18 @@ export async function GET() {
   });
 
   if (!res.ok) {
-    return NextResponse.json({ error: "GitHub API error" }, { status: 502 });
+    const text = await res.text().catch(() => "");
+    console.error("GitHub API error:", res.status, text);
+    return NextResponse.json({ error: "GitHub API error", status: res.status }, { status: 502 });
   }
 
   const json = await res.json();
+
+  if (json.errors) {
+    console.error("GitHub GraphQL errors:", JSON.stringify(json.errors));
+    return NextResponse.json({ error: "GitHub GraphQL error" }, { status: 502 });
+  }
+
   const calendar = json.data?.user?.contributionsCollection?.contributionCalendar;
 
   if (!calendar) {
