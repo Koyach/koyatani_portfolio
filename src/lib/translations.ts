@@ -219,6 +219,7 @@ export const translations = {
       description:
         "取材・登壇・協業のご相談など、お気軽にご連絡ください。",
       scheduleButton: "日程を調整する",
+      cvButton: "履歴書をダウンロード",
       photoAlt: "谷昊埜 — 海を見つめる後ろ姿",
       formName: "お名前",
       formEmail: "メールアドレス",
@@ -460,6 +461,7 @@ export const translations = {
       description:
         "For press, speaking, or collaboration inquiries, feel free to reach out.",
       scheduleButton: "Schedule a Meeting",
+      cvButton: "Download CV",
       photoAlt: "Koya Tani \u2014 Looking out at the ocean",
       formName: "Name",
       formEmail: "Email",
