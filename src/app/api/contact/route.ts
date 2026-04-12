@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { getPrisma } from "@/lib/prisma";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 export async function GET() {
   try {
@@ -76,7 +78,7 @@ export async function POST(request: Request) {
 
     // メール通知（失敗してもフォーム送信自体は成功扱い）
     try {
-      await resend.emails.send({
+      await getResend().emails.send({
         from: "koyatani.com <contact@koyatani.com>",
         to: process.env.ADMIN_EMAIL!,
         subject: `[koyatani.com] ${name} さんからお問い合わせ`,

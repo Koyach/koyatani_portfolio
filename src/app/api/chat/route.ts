@@ -1,10 +1,14 @@
 import OpenAI from "openai";
 import { headers } from "next/headers";
 
-const client = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: "https://api.deepseek.com",
-});
+export const dynamic = "force-dynamic";
+
+function getClient() {
+  return new OpenAI({
+    apiKey: process.env.DEEPSEEK_API_KEY,
+    baseURL: "https://api.deepseek.com",
+  });
+}
 
 // In-memory rate limiter: max 10 requests per IP per minute
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -106,7 +110,7 @@ export async function POST(request: Request) {
     content: String(m.content).slice(0, 500),
   }));
 
-  const stream = await client.chat.completions.create({
+  const stream = await getClient().chat.completions.create({
     model: "deepseek-chat",
     max_tokens: 512,
     stream: true,
