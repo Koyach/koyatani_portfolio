@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
+import Link from "next/link";
 import {
   BarChart,
   Bar,
@@ -138,21 +139,24 @@ function MiniPieChart({
 export default function AdminAnalytics() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [days, setDays] = useState(30);
-  const [loading, setLoading] = useState(true);
+  const [fetchKey, setFetchKey] = useState(0);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    const res = await fetch(`/api/analytics?days=${days}`);
-    const json = await res.json();
-    setData(json);
-    setLoading(false);
-  }, [days]);
+  function changeDays(newDays: number) {
+    setDays(newDays);
+    setData(null);
+    setFetchKey((k) => k + 1);
+  }
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    const controller = new AbortController();
+    fetch(`/api/analytics?days=${days}`, { signal: controller.signal })
+      .then((res) => res.json())
+      .then((json) => setData(json))
+      .catch(() => {});
+    return () => controller.abort();
+  }, [days, fetchKey]);
 
-  if (loading || !data) {
+  if (!data) {
     return (
       <div className="min-h-screen bg-[#0c0f14] text-[#f0ece4] flex items-center justify-center">
         <p className="text-[#5e6678]">Loading...</p>
@@ -171,7 +175,7 @@ export default function AdminAnalytics() {
           <div className="flex items-center gap-4">
             <select
               value={days}
-              onChange={(e) => setDays(Number(e.target.value))}
+              onChange={(e) => changeDays(Number(e.target.value))}
               className="bg-[#141821] border border-[rgba(240,236,228,0.08)] rounded px-3 py-1.5 text-sm text-[#f0ece4] outline-none"
             >
               <option value={7}>7 days</option>
@@ -185,12 +189,12 @@ export default function AdminAnalytics() {
             >
               Messages
             </a>
-            <a
+            <Link
               href="/"
               className="text-sm text-[#5e6678] hover:text-[#f0ece4] transition-colors"
             >
               Back to site
-            </a>
+            </Link>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
               className="text-sm text-red-400/70 hover:text-red-400 transition-colors"

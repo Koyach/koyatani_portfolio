@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { signOut } from "next-auth/react";
+import Link from "next/link";
 
 type Message = {
   id: string;
@@ -25,8 +26,17 @@ export default function AdminMessages() {
   }, []);
 
   useEffect(() => {
-    fetchMessages();
-  }, [fetchMessages]);
+    let cancelled = false;
+    fetch("/api/contact")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled) {
+          setMessages(data);
+          setLoading(false);
+        }
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   async function toggleRead(id: string, isRead: boolean) {
     await fetch("/api/contact", {
@@ -71,12 +81,12 @@ export default function AdminMessages() {
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <a
+            <Link
               href="/"
               className="text-sm text-[#5e6678] hover:text-[#f0ece4] transition-colors"
             >
               Back to site
-            </a>
+            </Link>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
               className="text-sm text-red-400/70 hover:text-red-400 transition-colors"

@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useLanguage } from "@/lib/LanguageContext";
+import Link from "next/link";
 
 export default function CVPage() {
   const { t, locale } = useLanguage();
@@ -29,9 +30,9 @@ export default function CVPage() {
       <div className="cv-page min-h-screen bg-white text-black p-8 md:p-16 max-w-[800px] mx-auto">
         {/* Back button (hidden in print) */}
         <div className="no-print mb-8 flex items-center justify-between">
-          <a href="/" className="text-sm text-blue-600 hover:underline">
+          <Link href="/" className="text-sm text-blue-600 hover:underline">
             &larr; Back to site
-          </a>
+          </Link>
           <button
             onClick={() => window.print()}
             className="px-4 py-2 bg-black text-white text-sm rounded-lg hover:bg-gray-800"

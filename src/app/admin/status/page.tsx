@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
+import Link from "next/link";
 
 export default function AdminStatus() {
   const [text, setText] = useState("");
@@ -50,7 +51,7 @@ export default function AdminStatus() {
           <div className="flex items-center gap-4">
             <a href="/admin/messages" className="text-sm text-[#5e6678] hover:text-[#f0ece4] transition-colors">Messages</a>
             <a href="/admin/analytics" className="text-sm text-[#5e6678] hover:text-[#f0ece4] transition-colors">Analytics</a>
-            <a href="/" className="text-sm text-[#5e6678] hover:text-[#f0ece4] transition-colors">Back to site</a>
+            <Link href="/" className="text-sm text-[#5e6678] hover:text-[#f0ece4] transition-colors">Back to site</Link>
             <button onClick={() => signOut({ callbackUrl: "/" })} className="text-sm text-red-400/70 hover:text-red-400 transition-colors">Sign out</button>
           </div>
         </div>
