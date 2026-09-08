@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Noto_Sans_JP, DM_Mono, Space_Grotesk } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Noto_Sans_JP, DM_Mono, Space_Grotesk, Klee_One } from "next/font/google";
 import { LanguageProvider } from "@/lib/LanguageContext";
 import CommandPalette from "@/components/CommandPalette";
 import PageTracker from "@/components/PageTracker";
@@ -26,16 +26,32 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
+// Pen-like Japanese face for the visitor's own words on the canvas.
+const klee = Klee_One({
+  variable: "--font-klee",
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  display: "swap",
+  preload: false,
+});
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#fbfaf7",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://koyatani.com"),
-  title: "谷昊埜 | Koya Tani — 慶應SFC / ミラコエ代表 / Bedrock Space COO",
+  title: "谷昊埜 | Koya Tani — 慶應SFC / ミラコエ創設者 / Zero Industries COO",
   description:
-    "谷昊埜（たにこうや）のポートフォリオ。慶應義塾大学SFC在学。学生団体ミラコエ代表として若者の政治参加を推進。Bedrock Space COO。元競技スキーヤー。",
-  keywords: ["谷昊埜", "たにこうや", "Koya Tani", "慶應SFC", "ミラコエ", "Bedrock Space"],
+    "谷昊埜（たにこうや）のポートフォリオ。慶應義塾大学SFC在学。学生団体ミラコエ創設者として若者の政治参加を推進。Zero Industries 共同創業・COO。元競技スキーヤー。",
+  keywords: ["谷昊埜", "たにこうや", "Koya Tani", "慶應SFC", "ミラコエ", "Zero Industries"],
   openGraph: {
     title: "谷昊埜 | Koya Tani",
     description:
-      "慶應SFC在学。学生団体ミラコエ代表 / Bedrock Space COO / 元競技スキーヤー。",
+      "慶應SFC在学。学生団体ミラコエ創設者 / Zero Industries COO / 元競技スキーヤー。",
     type: "website",
     locale: "ja_JP",
     url: "https://koyatani.com",
@@ -52,15 +68,12 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "谷昊埜 | Koya Tani",
-    description: "慶應SFC在学。学生団体ミラコエ代表 / Bedrock Space COO。",
+    description: "慶應SFC在学。学生団体ミラコエ創設者 / Zero Industries COO。",
     images: ["/images/og.JPG"],
     creator: "@koyach777",
   },
   alternates: {
     canonical: "https://koyatani.com",
-  },
-  other: {
-    "theme-color": "#0c0f14",
   },
 };
 
@@ -80,8 +93,7 @@ const jsonLd = {
     },
     {
       "@type": "Organization",
-      name: "Bedrock Space",
-      description: "AI Startup",
+      name: "Zero Industries",
     },
     {
       "@type": "EducationalOrganization",
@@ -110,11 +122,6 @@ export default function RootLayout({
   return (
     <html lang="ja" className="scroll-smooth">
       <head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, viewport-fit=cover"
-        />
-        <meta name="theme-color" content="#0c0f14" />
         <meta name="google-site-verification" content="8ZkEJ-lThcmV9gYsTMnQgZQTwCtUqG38j-c3dvHAUCk" />
         <script
           type="application/ld+json"
@@ -122,7 +129,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${notoSans.variable} ${dmMono.variable} ${spaceGrotesk.variable} antialiased`}
+        className={`${notoSans.variable} ${dmMono.variable} ${spaceGrotesk.variable} ${klee.variable} antialiased`}
       >
         <LanguageProvider>
           <PageTracker />

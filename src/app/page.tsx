@@ -1,47 +1,21 @@
-import Header from "@/components/Header";
-import Hero from "@/components/Hero";
-import About from "@/components/About";
-import Projects from "@/components/Projects";
-import Achievements from "@/components/Achievements";
-import Media from "@/components/Media";
-import Skiing from "@/components/Skiing";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
-import ScrollReveal from "@/components/ScrollReveal";
-import CursorGlow from "@/components/CursorGlow";
-import OpeningMotion from "@/components/OpeningMotion";
-import LatestPost from "@/components/LatestPost";
-import ChatWidget from "@/components/ChatWidget";
-import ActivityHeatmap from "@/components/ActivityHeatmap";
+import Atelier from "@/components/atelier/Atelier";
+import { getAllPosts } from "@/lib/blog";
 
 export default function Home() {
+  const posts = getAllPosts().map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    titleEn: p.titleEn,
+    date: p.date,
+    description: p.description,
+    descriptionEn: p.descriptionEn,
+    minutes: Math.max(1, parseInt(p.readingTime, 10) || 1),
+  }));
+
   return (
-    <>
-      <OpeningMotion />
-      <CursorGlow />
-      <Header />
-      <main>
-        <Hero />
-        <hr className="divider" />
-        <About />
-        <hr className="divider" />
-        <Projects />
-        <hr className="divider" />
-        <ActivityHeatmap />
-        <hr className="divider" />
-        <LatestPost />
-        <hr className="divider" />
-        <Achievements />
-        <hr className="divider" />
-        <Media />
-        <hr className="divider" />
-        <Skiing />
-        <hr className="divider" />
-        <Contact />
-      </main>
-      <Footer />
-      <ScrollReveal />
-      <ChatWidget />
-    </>
+    <main>
+      <h1 className="sr-only">谷昊埜 | Koya Tani</h1>
+      <Atelier posts={posts} />
+    </main>
   );
 }
