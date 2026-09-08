@@ -253,18 +253,29 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
       const sx = x * k + v.x;
       return sx >= 8 && sx + w * k <= vw - 8;
     };
+    const openRects = docRef.current.panels.filter((p) => p.open && p.shapeId !== shape.id).map(panelRect);
+    const overlaps = (x: number, y: number) =>
+      openRects.filter((r) => bboxIntersects(r, { minX: x, minY: y, maxX: x + w, maxY: y + 56 + Math.min(maxPanelH, 520) }));
+    const candidates: Array<Pick<PanelState, "x" | "y" | "w" | "side">> = [];
     if (vw >= 640) {
       const rx = b.maxX + PANEL_GAP;
-      if (fits(rx)) return { x: rx, y: b.minY, w, side: "right" };
+      if (fits(rx)) candidates.push({ x: rx, y: b.minY, w, side: "right" });
       const lx = b.minX - PANEL_GAP - w;
-      if (fits(lx)) return { x: lx, y: b.minY, w, side: "left" };
+      if (fits(lx)) candidates.push({ x: lx, y: b.minY, w, side: "left" });
     }
     const sx = Math.min(Math.max(b.minX * k + v.x, 12), vw - w * k - 12);
-    return { x: (sx - v.x) / k, y: b.maxY + PANEL_GAP, w, side: "below" };
+    candidates.push({ x: (sx - v.x) / k, y: b.maxY + PANEL_GAP, w, side: "below" });
+
+    // prefer a spot that does not sit on another open sheet
+    const clear = candidates.find((c) => overlaps(c.x, c.y).length === 0);
+    if (clear) return clear;
+    const first = candidates[0];
+    const lowest = Math.max(...overlaps(first.x, first.y).map((r) => r.maxY));
+    return { ...first, y: lowest + 16 };
   };
 
   // ------------------------------------------------------------- panels
-  const openPanel = (shapeId: string, topic: TopicId, focus = true) => {
+  const openPanel = (shapeId: string, topic: TopicId, focus = true, anchor?: string) => {
     const shape = docRef.current.shapes.find((s) => s.id === shapeId);
     if (!shape) return;
     const z = ++zTop.current;
@@ -272,11 +283,11 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
     mutate((d) => {
       const existing = d.panels.find((p) => p.shapeId === shapeId);
       if (existing) {
-        const next: PanelState = { ...existing, topic, open: true, collapsed: false, z };
+        const next: PanelState = { ...existing, topic, anchor: anchor ?? existing.anchor, open: true, collapsed: false, z };
         placed = next;
         return { ...d, panels: d.panels.map((p) => (p.shapeId === shapeId ? next : p)) };
       }
-      const next: PanelState = { shapeId, topic, ...placePanel(shape), open: true, collapsed: false, z };
+      const next: PanelState = { shapeId, topic, anchor, ...placePanel(shape), open: true, collapsed: false, z };
       placed = next;
       return { ...d, panels: [...d.panels, next] };
     });
@@ -335,7 +346,7 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
       shapes: d.shapes.map((s) => (s.id === shapeId ? { ...s, label: trimmed, topic: res.topic } : s)),
     }));
     if (res.topic) {
-      openPanel(shapeId, res.topic);
+      openPanel(shapeId, res.topic, true, res.anchor);
       say(fill(at.a11y.became, { label: trimmed, topic: topicName(res.topic) }));
     } else {
       setSuggest({ shapeId, word: trimmed, options: res.suggestions });

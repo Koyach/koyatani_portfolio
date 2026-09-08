@@ -1,4 +1,5 @@
 import type { Locale } from "@/lib/translations";
+import { questions } from "@/data/questions";
 
 export type TopicId =
   | "about"
@@ -8,7 +9,9 @@ export type TopicId =
   | "skiing"
   | "media"
   | "achievements"
-  | "writing";
+  | "writing"
+  | "questions"
+  | "books";
 
 export interface Topic {
   id: TopicId;
@@ -112,6 +115,24 @@ export const TOPICS: Topic[] = [
       "物語", "story", "stories", "振り返り", "抱負", "反省",
     ],
   },
+  {
+    id: "questions",
+    name: { ja: "問い", en: "Questions" },
+    hint: { ja: "よくある問いに、本人の言葉で", en: "Common questions, in his own words" },
+    keywords: [
+      "問い", "とい", "質問", "しつもん", "聞きたい", "ききたい", "教えて", "おしえて", "なぜ", "どうして",
+      "q&a", "qa", "faq", "question", "questions", "ask", "why", "how", "interview", "インタビュー",
+    ],
+  },
+  {
+    id: "books",
+    name: { ja: "本棚", en: "Bookshelf" },
+    hint: { ja: "読んだ本と一言", en: "Books, one line each" },
+    keywords: [
+      "本棚", "ほんだな", "本", "ほん", "読書", "どくしょ", "書籍", "しょせき", "読んだ本", "愛読書",
+      "book", "books", "bookshelf", "shelf", "reading list", "library",
+    ],
+  },
 ];
 
 export const TOPIC_BY_ID: Record<TopicId, Topic> = Object.fromEntries(
@@ -140,8 +161,28 @@ const NORMALIZED: Array<{ id: TopicId; keys: string[] }> = TOPICS.map((t) => ({
 
 export interface Resolution {
   topic: TopicId | null;
+  /** id of a specific question when the word matched one of Koya's answered questions */
+  anchor?: string;
   /** 3 near topics when unresolved (also handy as an "or did you mean" list) */
   suggestions: TopicId[];
+}
+
+const QUESTION_KEYS: Array<{ id: string; keys: string[] }> = questions.map((q) => ({
+  id: q.id,
+  keys: Array.from(new Set(q.keywords.map(normalizeWord).filter((k) => k.length >= 2))),
+}));
+
+/** The question whose keyword best explains the word (longest match wins). */
+function matchQuestion(w: string): string | null {
+  let best: { id: string; len: number } | null = null;
+  for (const q of QUESTION_KEYS) {
+    for (const k of q.keys) {
+      if (w === k || w.includes(k)) {
+        if (!best || k.length > best.len) best = { id: q.id, len: k.length };
+      }
+    }
+  }
+  return best?.id ?? null;
 }
 
 /**
@@ -155,6 +196,10 @@ export function resolveWord(word: string): Resolution {
   for (const t of NORMALIZED) {
     if (t.keys.includes(w)) return { topic: t.id, suggestions: [] };
   }
+
+  // A phrase that matches one of the answered questions opens that answer.
+  const q = matchQuestion(w);
+  if (q) return { topic: "questions", anchor: q, suggestions: [] };
 
   let best: { id: TopicId; score: number } | null = null;
   for (const t of NORMALIZED) {

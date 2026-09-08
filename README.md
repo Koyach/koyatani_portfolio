@@ -52,14 +52,15 @@ src/
 │   │   └── export.ts            # キャンバスを PNG に書き出す
 │   ├── translations.ts          # 全テキスト（ja / en）
 │   ├── blog.ts prisma.ts auth.ts LanguageContext.tsx
-└── data/projects.ts books.ts
+└── data/projects.ts questions.ts timeline.ts now.ts philosophy.ts books.ts   # 本人の言葉・年表・いま・行動原理の由来・本棚
 ```
 
 ## キャンバスの仕様（要点）
 
 - **描画**: Pointer Events（マウス・タッチ・ペン）。2 本指でパン／ピンチ、ホイールでパン、Ctrl+ホイールでズーム、Space+ドラッグでパン
 - **図形判定**: 始点と終点の距離・周長・面積で「囲み」を判定。途切れた線は直前の線と端点を結合して再判定（最大 4 本）
-- **言葉**: 図形内をタップ → 入力欄。Enter/決定で確定。対応語がなければ言葉を残したまま近い項目を 3 つ提案
+- **言葉**: 図形内をタップ → 入力欄。Enter/決定で確定。「問い」（`data/questions.ts`）に一致する言葉はその答えを開き、対応語がなければ言葉を残したまま近い項目を 3 つ提案
+- **項目**: 私について / 実績 / 思想 / コンタクト / スキー / メディア / 受賞・所属 / 文章 / 問い / 本棚（`lib/atelier/topics.ts`）
 - **手書き認識**: ブラウザが `navigator.createHandwritingRecognizer` を持つ場合のみ使用し、結果は修正可能。無い場合は「書いた言葉を入力」へ誘導（偽の認識結果は返さない）
 - **パネル**: 図形の右 → 左 → 下の順に空きを探して配置。ドラッグ／矢印キーで移動、折りたたみ、閉じる→図形を押して再表示
 - **関係線**: 項目の付いた 2 図形を線で結ぶと `relations.ts` の文を表示。未定義の組は「まだ言葉になっていません」

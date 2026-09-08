@@ -135,7 +135,7 @@ export default function Panel(props: Props) {
 
       {!panel.collapsed && (
         <div className="atelier-panel-body" data-scroll style={{ maxHeight }}>
-          <TopicContent topic={panel.topic} posts={posts} onOpenTopic={props.onOpenTopic} />
+          <TopicContent topic={panel.topic} anchor={panel.anchor} posts={posts} onOpenTopic={props.onOpenTopic} />
         </div>
       )}
     </section>

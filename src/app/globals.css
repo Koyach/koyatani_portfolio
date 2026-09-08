@@ -980,3 +980,68 @@ body::before {
   }
   .atelier-placeholder { animation: none; opacity: 0.8; }
 }
+
+/* ── Atelier: richer panel blocks (2026-09-08) ── */
+.atelier-figure {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 2px;
+  margin: 2px 0 12px;
+  filter: saturate(0.9);
+}
+.atelier-intro { color: var(--ash); font-size: 12.5px; margin: 0 0 10px; }
+.atelier-timeline { list-style: none; padding: 0; margin: 0 0 10px; }
+.atelier-timeline li {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  gap: 10px;
+  padding: 5px 0;
+  border-top: 1px solid var(--line-2);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.atelier-timeline li:first-child { border-top: 0; }
+.atelier-timeline-when {
+  font-family: var(--font-dm-mono), monospace;
+  font-size: 11px;
+  color: var(--ash);
+  padding-top: 3px;
+  letter-spacing: 0.02em;
+}
+.atelier-facts { margin: 6px 0 10px; display: grid; gap: 6px; }
+.atelier-facts div { display: grid; grid-template-columns: 82px 1fr; gap: 10px; }
+.atelier-facts dt { font-size: 11px; color: var(--ash); font-family: var(--font-dm-mono), monospace; padding-top: 3px; letter-spacing: 0.04em; }
+.atelier-facts dd { margin: 0; font-size: 13.5px; }
+.atelier-qa { border-top: 1px solid var(--line-2); padding: 8px 0; }
+.atelier-qa:first-of-type { border-top: 0; padding-top: 0; }
+.atelier-qa summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--ink);
+  padding: 4px 0;
+}
+.atelier-qa summary::-webkit-details-marker { display: none; }
+.atelier-qa summary::before {
+  content: "＋";
+  flex: none;
+  color: var(--ash);
+  font-weight: 400;
+  font-family: var(--font-dm-mono), monospace;
+}
+.atelier-qa[open] summary::before { content: "－"; }
+.atelier-qa summary:hover { text-decoration: underline; text-decoration-color: var(--ash-2); text-underline-offset: 4px; }
+.atelier-qa summary:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 2px; border-radius: 2px; }
+.atelier-qa p { margin: 6px 0 6px 22px; }
+.atelier-qa .atelier-links { margin: 4px 0 4px 22px; }
+.atelier-principle h4 { margin: 10px 0 2px; font-size: 14.5px; font-weight: 500; color: var(--ink); }
+.atelier-principle p { margin-bottom: 8px; }
+@media (max-width: 640px) {
+  .atelier-timeline li { grid-template-columns: 62px 1fr; }
+  .atelier-facts div { grid-template-columns: 70px 1fr; }
+}

@@ -91,7 +91,7 @@ export default function AdminStatus() {
               type="text"
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="e.g. Building Bedrock Space"
+              placeholder="e.g. Building Zero Industries"
               className="w-full px-4 py-3 bg-[#141821] border border-[rgba(240,236,228,0.08)] rounded-lg text-sm text-[#f0ece4] outline-none focus:border-[#c94a2e] transition-colors"
             />
           </div>

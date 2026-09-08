@@ -1,11 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/lib/LanguageContext";
 import { projects } from "@/data/projects";
-import type { TopicId } from "@/lib/atelier/topics";
+import { questions } from "@/data/questions";
+import { timeline } from "@/data/timeline";
+import { now } from "@/data/now";
+import { principles, concern } from "@/data/philosophy";
+import { books } from "@/data/books";
+import { TOPIC_BY_ID, type TopicId } from "@/lib/atelier/topics";
 
 export interface PostSummary {
   slug: string;
@@ -19,15 +24,17 @@ export interface PostSummary {
 
 interface Props {
   topic: TopicId;
+  /** a question id to open first (questions topic) */
+  anchor?: string;
   posts: PostSummary[];
   onOpenTopic: (topic: TopicId) => void;
 }
 
 /**
- * What unfolds from each word. Every line here is read from translations.ts,
- * data/projects.ts or content/blog — the same sources as the rest of the site.
+ * What unfolds from each word. Everything here is read from translations.ts,
+ * data/*.ts or content/blog — the same sources as the rest of the site.
  */
-export default function TopicContent({ topic, posts, onOpenTopic }: Props) {
+export default function TopicContent({ topic, anchor, posts, onOpenTopic }: Props) {
   switch (topic) {
     case "about":
       return <AboutContent onOpenTopic={onOpenTopic} />;
@@ -38,21 +45,40 @@ export default function TopicContent({ topic, posts, onOpenTopic }: Props) {
     case "contact":
       return <ContactContent />;
     case "skiing":
-      return <SkiingContent />;
+      return <SkiingContent onOpenTopic={onOpenTopic} />;
     case "media":
       return <MediaContent />;
     case "achievements":
       return <AchievementsContent />;
     case "writing":
       return <WritingContent posts={posts} />;
+    case "questions":
+      return <QuestionsContent anchor={anchor} onOpenTopic={onOpenTopic} />;
+    case "books":
+      return <BooksContent onOpenTopic={onOpenTopic} />;
   }
+}
+
+/** Buttons that open other parts of the canvas from inside a panel. */
+function TopicLinks({ topics, onOpenTopic }: { topics: TopicId[]; onOpenTopic: (t: TopicId) => void }) {
+  const { locale } = useLanguage();
+  return (
+    <>
+      {topics.map((id) => (
+        <button key={id} type="button" className="atelier-inline-btn" onClick={() => onOpenTopic(id)}>
+          {TOPIC_BY_ID[id].name[locale]}
+        </button>
+      ))}
+    </>
+  );
 }
 
 /* ---------------------------------------------------------------- about */
 
 function AboutContent({ onOpenTopic }: { onOpenTopic: (t: TopicId) => void }) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const a = t.about;
+  const pl = t.atelier.panels;
   const [status, setStatus] = useState<{ text: string; emoji: string } | null>(null);
 
   useEffect(() => {
@@ -80,15 +106,31 @@ function AboutContent({ onOpenTopic }: { onOpenTopic: (t: TopicId) => void }) {
       <p>{a.bio2}</p>
       <p>{a.bio3}</p>
 
+      <h3>
+        {pl.now} <span className="atelier-meta">{now.updated} {pl.updated}</span>
+      </h3>
+      <ul>
+        {now.doing[locale].map((line) => (
+          <li key={line}>{line}</li>
+        ))}
+      </ul>
+      <p>{now.interests[locale]}</p>
       {status && (
-        <>
-          <h3>{t.atelier.panels.now}</h3>
-          <p className="atelier-status">
-            {status.emoji && <span aria-hidden="true">{status.emoji}</span>}
-            <span>{status.text}</span>
-          </p>
-        </>
+        <p className="atelier-status">
+          {status.emoji && <span aria-hidden="true">{status.emoji}</span>}
+          <span>{status.text}</span>
+        </p>
       )}
+
+      <h3>{pl.timeline}</h3>
+      <ol className="atelier-timeline">
+        {timeline.map((e, i) => (
+          <li key={i}>
+            <span className="atelier-timeline-when">{e.when}</span>
+            <span>{e.event[locale]}</span>
+          </li>
+        ))}
+      </ol>
 
       <h3>{a.academicsLabel}</h3>
       <p>
@@ -105,12 +147,7 @@ function AboutContent({ onOpenTopic }: { onOpenTopic: (t: TopicId) => void }) {
       </ul>
 
       <div className="atelier-links">
-        <button type="button" className="atelier-inline-btn" onClick={() => onOpenTopic("works")}>
-          {t.atelier.panels.openWorks}
-        </button>
-        <button type="button" className="atelier-inline-btn" onClick={() => onOpenTopic("philosophy")}>
-          {t.atelier.panels.openPhilosophy}
-        </button>
+        <TopicLinks topics={["questions", "works", "philosophy"]} onOpenTopic={onOpenTopic} />
         <Link href="/cv" target="_blank" rel="noopener noreferrer">
           {t.contact.cvButton}
         </Link>
@@ -123,51 +160,80 @@ function AboutContent({ onOpenTopic }: { onOpenTopic: (t: TopicId) => void }) {
 
 function WorksContent({ onOpenTopic }: { onOpenTopic: (t: TopicId) => void }) {
   const { t, locale } = useLanguage();
+  const pl = t.atelier.panels;
   return (
     <div className="atelier-prose">
-      {projects.map((p) => (
-        <article key={p.slug} className="atelier-item">
-          <span className="atelier-meta">{p.tag}</span>
-          <h4>
-            {p.title[locale]}
-            {p.subtitle && <span style={{ color: "var(--ash)", fontWeight: 400 }}> — {p.subtitle[locale]}</span>}
-          </h4>
-          <p className="atelier-meta" style={{ marginBottom: 6 }}>
-            {p.role[locale]}
-          </p>
-          <p>{p.description[locale]}</p>
-          {p.stats && (
-            <div className="atelier-stats">
-              {p.stats.map((s) => (
-                <span key={s.label[locale]}>
-                  <b>{s.value}</b>
-                  {s.label[locale]}
-                </span>
-              ))}
-            </div>
-          )}
-          {p.highlights && (
-            <ul>
-              {p.highlights.map((h) => (
-                <li key={h[locale]}>{h[locale]}</li>
-              ))}
-            </ul>
-          )}
-          {p.reflection && <p className="atelier-quote">{p.reflection[locale]}</p>}
-          <div className="atelier-links">
-            <Link href={`/projects/${p.slug}`}>{t.atelier.panels.more} →</Link>
-            {p.url && (
-              <a href={p.url} target="_blank" rel="noopener noreferrer">
-                {t.atelier.panels.website} ↗
-              </a>
+      {projects.map((p) => {
+        const facts: Array<[string, string | undefined]> = [
+          [pl.why, p.why?.[locale]],
+          [pl.what, p.what?.[locale]],
+          [pl.learned, p.learned?.[locale]],
+          [pl.status, p.status?.[locale]],
+        ];
+        return (
+          <article key={p.slug} className="atelier-item">
+            {p.image && (
+              <Image
+                src={p.image}
+                alt={p.title[locale]}
+                width={640}
+                height={427}
+                className="atelier-figure"
+                sizes="(max-width: 640px) 90vw, 340px"
+              />
             )}
-          </div>
-        </article>
-      ))}
+            <span className="atelier-meta">{p.tag}</span>
+            <h4>
+              {p.title[locale]}
+              {p.subtitle && <span style={{ color: "var(--ash)", fontWeight: 400 }}> — {p.subtitle[locale]}</span>}
+            </h4>
+            <p className="atelier-meta" style={{ marginBottom: 6 }}>
+              {p.role[locale]}
+            </p>
+            {p.description[locale] && <p>{p.description[locale]}</p>}
+            {facts.some(([, v]) => v) && (
+              <dl className="atelier-facts">
+                {facts.map(([k, v]) =>
+                  v ? (
+                    <div key={k}>
+                      <dt>{k}</dt>
+                      <dd>{v}</dd>
+                    </div>
+                  ) : null
+                )}
+              </dl>
+            )}
+            {p.stats && (
+              <div className="atelier-stats">
+                {p.stats.map((s) => (
+                  <span key={s.label[locale]}>
+                    <b>{s.value}</b>
+                    {s.label[locale]}
+                  </span>
+                ))}
+              </div>
+            )}
+            {p.highlights && (
+              <ul>
+                {p.highlights.map((h) => (
+                  <li key={h[locale]}>{h[locale]}</li>
+                ))}
+              </ul>
+            )}
+            {p.reflection && <p className="atelier-quote">{p.reflection[locale]}</p>}
+            <div className="atelier-links">
+              <Link href={`/projects/${p.slug}`}>{pl.more} →</Link>
+              {p.url && (
+                <a href={p.url} target="_blank" rel="noopener noreferrer">
+                  {pl.website} ↗
+                </a>
+              )}
+            </div>
+          </article>
+        );
+      })}
       <div className="atelier-links" style={{ marginTop: 14 }}>
-        <button type="button" className="atelier-inline-btn" onClick={() => onOpenTopic("writing")}>
-          {t.atelier.panels.openWriting}
-        </button>
+        <TopicLinks topics={["questions", "achievements", "writing"]} onOpenTopic={onOpenTopic} />
       </div>
     </div>
   );
@@ -176,7 +242,8 @@ function WorksContent({ onOpenTopic }: { onOpenTopic: (t: TopicId) => void }) {
 /* ----------------------------------------------------------- philosophy */
 
 function PhilosophyContent({ onOpenTopic }: { onOpenTopic: (t: TopicId) => void }) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const pl = t.atelier.panels;
   return (
     <div className="atelier-prose">
       <p className="atelier-quote">
@@ -186,19 +253,25 @@ function PhilosophyContent({ onOpenTopic }: { onOpenTopic: (t: TopicId) => void 
       </p>
 
       <h3>{t.about.principlesLabel}</h3>
-      <ol>
-        {t.about.principles.map((p) => (
-          <li key={p}>{p}</li>
-        ))}
-      </ol>
+      {principles.map((p) => (
+        <section key={p.title.ja} className="atelier-principle">
+          <h4>{p.title[locale]}</h4>
+          <p>
+            <span className="atelier-meta">{pl.origin}</span> {p.origin[locale]}
+          </p>
+        </section>
+      ))}
+
+      <h3>{pl.concern}</h3>
+      {concern[locale].map((line) => (
+        <p key={line}>{line}</p>
+      ))}
 
       <h3>{t.projects.noto.title}</h3>
       <p>{t.projects.noto.reflection}</p>
 
       <div className="atelier-links">
-        <button type="button" className="atelier-inline-btn" onClick={() => onOpenTopic("writing")}>
-          {t.atelier.panels.openWriting}
-        </button>
+        <TopicLinks topics={["questions", "books", "writing"]} onOpenTopic={onOpenTopic} />
       </div>
     </div>
   );
@@ -213,15 +286,22 @@ const SNS = [
   { label: "note", url: "https://note.com/koya_sfc", handle: "koya_sfc" },
 ];
 
+const EMAIL = "koya@zero.space";
 const CALENDAR_URL = "https://calendar.app.google/riCES5AXDQzaAwF37";
 
 function ContactContent() {
   const { t } = useLanguage();
   const c = t.contact;
+  const pl = t.atelier.panels;
   return (
     <div className="atelier-prose">
       <p className="atelier-lead">{c.heading}</p>
       <p>{c.description}</p>
+
+      <h3>{pl.email}</h3>
+      <p>
+        <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+      </p>
 
       <h3>SNS</h3>
       <ul style={{ listStyle: "none", paddingLeft: 0 }}>
@@ -313,11 +393,12 @@ function ContactForm() {
 
 /* --------------------------------------------------------------- skiing */
 
-function SkiingContent() {
+function SkiingContent({ onOpenTopic }: { onOpenTopic: (t: TopicId) => void }) {
   const { t } = useLanguage();
   const s = t.skiing;
   return (
     <div className="atelier-prose">
+      <Image src="/images/skiing.jpg" alt={s.photoAlt} width={640} height={427} className="atelier-figure" sizes="(max-width: 640px) 90vw, 340px" />
       <p className="atelier-lead">
         {s.heading1} × {s.heading2}
       </p>
@@ -339,6 +420,13 @@ function SkiingContent() {
           <li key={o}>{o}</li>
         ))}
       </ul>
+
+      <div className="atelier-links">
+        <TopicLinks topics={["questions", "philosophy"]} onOpenTopic={onOpenTopic} />
+        <a href="https://www.instagram.com/koyatani_0828" target="_blank" rel="noopener noreferrer">
+          Instagram ↗
+        </a>
+      </div>
     </div>
   );
 }
@@ -419,6 +507,72 @@ function WritingContent({ posts }: { posts: PostSummary[] }) {
         <a href="https://note.com/koya_sfc" target="_blank" rel="noopener noreferrer">
           {t.atelier.panels.alsoOnNote} ↗
         </a>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------ questions */
+
+function QuestionsContent({ anchor, onOpenTopic }: { anchor?: string; onOpenTopic: (t: TopicId) => void }) {
+  const { t, locale } = useLanguage();
+  const pl = t.atelier.panels;
+  const ref = useRef<HTMLDivElement>(null);
+
+  // bring the matched question to the top of the sheet
+  useEffect(() => {
+    if (!anchor) return;
+    const root = ref.current;
+    if (!root) return;
+    const id = window.setTimeout(() => {
+      const el = root.querySelector<HTMLDetailsElement>(`[data-q="${anchor}"]`);
+      if (!el) return;
+      el.open = true;
+      el.scrollIntoView({ block: "start" });
+    }, 60);
+    return () => window.clearTimeout(id);
+  }, [anchor]);
+
+  return (
+    <div className="atelier-prose" ref={ref}>
+      <p className="atelier-intro">{pl.questionsIntro}</p>
+      {questions.map((q) => (
+        <details key={q.id} data-q={q.id} className="atelier-qa" open={q.id === anchor}>
+          <summary>{q.question[locale]}</summary>
+          {q.answer[locale].map((para) => (
+            <p key={para}>{para}</p>
+          ))}
+          {q.related.length > 0 && (
+            <div className="atelier-links">
+              <span className="atelier-meta">{pl.related}</span>
+              <TopicLinks topics={q.related} onOpenTopic={onOpenTopic} />
+            </div>
+          )}
+        </details>
+      ))}
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- books */
+
+function BooksContent({ onOpenTopic }: { onOpenTopic: (t: TopicId) => void }) {
+  const { t } = useLanguage();
+  const pl = t.atelier.panels;
+  return (
+    <div className="atelier-prose">
+      {books.map((b) => (
+        <article key={b.slug} className="atelier-item">
+          <span className="atelier-meta">{b.genre}</span>
+          <h4>
+            {b.title} <span style={{ color: "var(--ash)", fontWeight: 400, fontSize: 12.5 }}>{b.author}</span>
+          </h4>
+          <p style={{ margin: 0 }}>{b.comment}</p>
+        </article>
+      ))}
+      <div className="atelier-links" style={{ marginTop: 14 }}>
+        <Link href="/bookshelf">{pl.allBooks} →</Link>
+        <TopicLinks topics={["philosophy", "questions"]} onOpenTopic={onOpenTopic} />
       </div>
     </div>
   );

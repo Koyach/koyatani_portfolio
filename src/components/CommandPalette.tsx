@@ -28,11 +28,13 @@ export default function CommandPalette() {
     { id: "media", label: "Media", sublabel: "メディア", category: "Canvas", action: () => openTopic("media") },
     { id: "achievements", label: "Achievements", sublabel: "受賞・所属", category: "Canvas", action: () => openTopic("achievements") },
     { id: "writing", label: "Writing", sublabel: "文章・ブログ", category: "Canvas", action: () => openTopic("writing") },
+    { id: "questions", label: "Questions", sublabel: "問い", category: "Canvas", action: () => openTopic("questions") },
+    { id: "books", label: "Bookshelf", sublabel: "本棚", category: "Canvas", action: () => openTopic("books") },
     // Pages
     { id: "blog", label: "Blog", sublabel: "Thoughts & notes", category: "Pages", action: () => router.push("/blog") },
     { id: "cv", label: "CV", sublabel: "Print / PDF", category: "Pages", action: () => router.push("/cv") },
     { id: "p-mirakoe", label: "Mirakoe", sublabel: "Project detail", category: "Projects", action: () => router.push("/projects/mirakoe") },
-    { id: "p-bedrock", label: "Bedrock Space", sublabel: "Project detail", category: "Projects", action: () => router.push("/projects/bedrock-space") },
+    { id: "p-bedrock", label: "Zero Industries", sublabel: "Project detail (formerly Bedrock Space)", category: "Projects", action: () => router.push("/projects/bedrock-space") },
     { id: "p-noto", label: "Noto Lacquerware", sublabel: "Project detail", category: "Projects", action: () => router.push("/projects/noto") },
     // Easter eggs
     { id: "ee-ski", label: "ski", sublabel: "Watch freestyle video", category: "Easter Eggs", action: () => window.open("https://www.instagram.com/koyatani_0828", "_blank") },

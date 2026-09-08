@@ -44,14 +44,14 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://koyatani.com"),
-  title: "谷昊埜 | Koya Tani — 慶應SFC / ミラコエ代表 / Bedrock Space COO",
+  title: "谷昊埜 | Koya Tani — 慶應SFC / ミラコエ創設者 / Zero Industries COO",
   description:
-    "谷昊埜（たにこうや）のポートフォリオ。慶應義塾大学SFC在学。学生団体ミラコエ代表として若者の政治参加を推進。Bedrock Space COO。元競技スキーヤー。",
-  keywords: ["谷昊埜", "たにこうや", "Koya Tani", "慶應SFC", "ミラコエ", "Bedrock Space"],
+    "谷昊埜（たにこうや）のポートフォリオ。慶應義塾大学SFC在学。学生団体ミラコエ創設者として若者の政治参加を推進。Zero Industries 共同創業・COO。元競技スキーヤー。",
+  keywords: ["谷昊埜", "たにこうや", "Koya Tani", "慶應SFC", "ミラコエ", "Zero Industries"],
   openGraph: {
     title: "谷昊埜 | Koya Tani",
     description:
-      "慶應SFC在学。学生団体ミラコエ代表 / Bedrock Space COO / 元競技スキーヤー。",
+      "慶應SFC在学。学生団体ミラコエ創設者 / Zero Industries COO / 元競技スキーヤー。",
     type: "website",
     locale: "ja_JP",
     url: "https://koyatani.com",
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "谷昊埜 | Koya Tani",
-    description: "慶應SFC在学。学生団体ミラコエ代表 / Bedrock Space COO。",
+    description: "慶應SFC在学。学生団体ミラコエ創設者 / Zero Industries COO。",
     images: ["/images/og.JPG"],
     creator: "@koyach777",
   },
@@ -93,8 +93,7 @@ const jsonLd = {
     },
     {
       "@type": "Organization",
-      name: "Bedrock Space",
-      description: "AI Startup",
+      name: "Zero Industries",
     },
     {
       "@type": "EducationalOrganization",

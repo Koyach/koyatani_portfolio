@@ -33,8 +33,8 @@ const RELATIONS: Record<string, Record<Locale, string>> = {
     en: "Appeared on AbemaTV's 2026 House of Representatives election special; a regular on YouTube's “Reiwa no Neko”.",
   },
   "works|philosophy": {
-    ja: "「アイデアの源泉は現場にある」。能登には3回通い、法人設立には至らなかったが、この経験が「現場から始める」原理を強くした。",
-    en: "“Ideas come from the field.” Three visits to Noto didn't lead to incorporation, but the experience hardened the principle of starting on the ground.",
+    ja: "能登では、事業づくりに市場選定がどれほど重要かを学んだ。自分の原体験と育った環境をメタ認知して、諦めずに続けられる領域と手段を選ぶこと。",
+    en: "Noto taught how much market selection matters. Know your own origins and environment well enough to pick a field, and a means, you can keep going in without giving up.",
   },
   "works|media": {
     ja: "ミラコエの活動は TBS京都で放映され、Yahoo!ニュース・読売新聞・京都新聞に掲載された。",

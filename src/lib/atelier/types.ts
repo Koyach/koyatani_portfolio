@@ -39,6 +39,8 @@ export interface PanelState {
   y: number;
   w: number;
   side: "right" | "left" | "below";
+  /** a question id to open first (questions topic) */
+  anchor?: string;
   open: boolean;
   collapsed: boolean;
   z: number;

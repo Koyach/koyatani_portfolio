@@ -56,19 +56,17 @@ export default function BookGrid({
   );
 }
 
+const CARD_CLASS =
+  "group block border border-[var(--border)] hover:border-[var(--border-hover)] rounded-lg overflow-hidden transition-colors";
+
 function BookCard({ book }: { book: Book }) {
   const [imgError, setImgError] = useState(false);
 
-  return (
-    <a
-      href={book.amazonUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group block border border-[var(--border)] hover:border-[var(--border-hover)] rounded-lg overflow-hidden transition-colors"
-    >
+  const inner = (
+    <>
       {/* Cover */}
       <div className="relative aspect-[3/4] bg-[var(--bg-tertiary)] overflow-hidden">
-        {!imgError ? (
+        {book.cover && !imgError ? (
           <Image
             src={book.cover}
             alt={book.title}
@@ -103,6 +101,7 @@ function BookCard({ book }: { book: Book }) {
         </p>
 
         {/* Amazon link hint */}
+        {book.amazonUrl && (
         <div className="flex items-center gap-1.5 mt-4 text-[0.7rem] text-[var(--text-tertiary)] group-hover:text-[var(--accent)] transition-colors">
           <span className="font-[family-name:var(--font-dm-mono)]">Amazon</span>
           <svg
@@ -119,7 +118,17 @@ function BookCard({ book }: { book: Book }) {
             />
           </svg>
         </div>
+        )}
       </div>
+    </>
+  );
+
+  // A book with a store link is a link; one without is just a card.
+  return book.amazonUrl ? (
+    <a href={book.amazonUrl} target="_blank" rel="noopener noreferrer" className={CARD_CLASS}>
+      {inner}
     </a>
+  ) : (
+    <div className={CARD_CLASS}>{inner}</div>
   );
 }
