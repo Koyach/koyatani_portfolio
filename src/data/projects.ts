@@ -83,7 +83,7 @@ export const projects: ProjectDetail[] = [
       { date: "2024.12", event: { ja: "メンバー20名突破", en: "Surpassed 20 members" } },
       { date: "2025.03", event: { ja: "ミライ選挙 開催（271名参加）", en: "Mirai Election held (271 attendees)" } },
       { date: "2025.06", event: { ja: "ぽりふぇす 開催（Red Bull協賛）", en: "Polifes held (Red Bull sponsored)" } },
-      { date: "2025.07", event: { ja: "学生団体サミット 優勝", en: "Student Org Summit — Grand Prize" } },
+      { date: "2025.08", event: { ja: "学生団体サミット 優勝", en: "Student Org Summit — Grand Prize" } },
       { date: "2025.09", event: { ja: "メンバー55名に成長", en: "Grew to 55 members" } },
       { date: "2026.05", event: { ja: "代表を退任、共同代表体制へ", en: "Steps down as president; co-president structure" } },
     ],

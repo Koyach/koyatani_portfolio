@@ -41,8 +41,8 @@ const RELATIONS: Record<string, Record<Locale, string>> = {
     en: "Mirakoe's work was aired by TBS Kyoto and covered by Yahoo! News, Yomiuri Shimbun and Kyoto Shimbun.",
   },
   "works|achievements": {
-    ja: "ミラコエ代表として第5回学生団体サミットで優勝（2025.07）。宮古島観光戦略プログラムでは最優秀賞。",
-    en: "Won the 5th Student Organization Summit as Mirakoe's president (Jul 2025); Best Award at the Miyako Island tourism strategy program.",
+    ja: "ミラコエ代表として第5回学生団体サミットで優勝（2025.08）。宮古島観光戦略プログラムでは最優秀賞。",
+    en: "Won the 5th Student Organization Summit as Mirakoe's president (Aug 2025); Best Award at the Miyako Island tourism strategy program.",
   },
   "works|writing": {
     ja: "「ミラコエの立ち上げ物語」「社会活動をしたらYahoo!ニュースで叩かれた件」など、活動の記録を note に書いている。",

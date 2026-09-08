@@ -40,10 +40,8 @@ export const timeline: TimelineEntry[] = [
     event: { ja: "ケニアで小学生に日本文化の授業。インドネシアで語学研修", en: "Teaches Japanese culture in Kenya; language program in Indonesia" },
   },
   { when: "2025.06", event: { ja: "ぽりふぇす（Red Bull 協賛）", en: "Polifes, sponsored by Red Bull" } },
-  {
-    when: "2025.07",
-    event: { ja: "第 5 回学生団体サミット 優勝。IVS スカラシップ 2 期", en: "Wins the 5th Student Organization Summit. IVS Scholarship, 2nd cohort" },
-  },
+  { when: "2025.07", event: { ja: "IVS スカラシップ 2 期に選出", en: "Selected for the IVS Scholarship, 2nd cohort" } },
+  { when: "2025.08", event: { ja: "第 5 回学生団体サミット 優勝（8 月 4 日）", en: "Wins the 5th Student Organization Summit (Aug 4)" } },
   { when: "2025", event: { ja: "ゴブリンスキークラブ（慶應、65 年の歴史）の代表を引き受ける", en: "Takes over as president of Goblin, Keio's 65-year-old ski club" } },
   {
     when: "2025–2026",

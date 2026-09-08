@@ -16,12 +16,10 @@ export const now: NowBlock = {
     ja: [
       "Zero Industries の COO として事業をつくる",
       "哲学書を読み、人と対話する",
-      "論文を書く",
     ],
     en: [
       "Building the business as COO of Zero Industries",
       "Reading philosophy and talking it through with people",
-      "Writing a paper",
     ],
   },
   interests: {

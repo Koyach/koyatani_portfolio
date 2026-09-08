@@ -104,7 +104,7 @@ export const translations = {
             "Silicon Valley Japan Platform 主催の第1期。2026年3月、シリコンバレーで6日間（企業訪問、Dan Okimoto 氏との対話、最終プレゼン）",
         },
         {
-          year: "2025.07",
+          year: "2025.08",
           title: "第5回学生団体サミット 優勝",
           detail: "約40団体・300名規模のサミットで、5分ピッチにより最年少で優勝（賞金20万円）",
         },
@@ -429,7 +429,7 @@ export const translations = {
             "First cohort of the Silicon Valley Japan Platform program. Six days in Silicon Valley in March 2026: company visits, a session with Dan Okimoto, final presentation",
         },
         {
-          year: "2025.07",
+          year: "2025.08",
           title: "5th Student Organization Summit \u2014 Grand Prize",
           detail: "Youngest winner among ~40 organizations and 300 attendees, on a five-minute pitch (\u00a5200K prize)",
         },
