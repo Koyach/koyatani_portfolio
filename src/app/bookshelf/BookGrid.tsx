@@ -85,7 +85,7 @@ function BookCard({ book }: { book: Book }) {
           </div>
         )}
         {/* Genre badge */}
-        <span className="absolute top-3 left-3 font-[family-name:var(--font-dm-mono)] text-[0.55rem] tracking-wider uppercase bg-black/60 backdrop-blur-sm text-[var(--text-secondary)] px-2 py-1 rounded">
+        <span className="absolute top-3 left-3 font-[family-name:var(--font-dm-mono)] text-[0.55rem] tracking-wider uppercase bg-[var(--bg-primary)]/85 backdrop-blur-sm text-[var(--text-secondary)] px-2 py-1 rounded">
           {book.genre}
         </span>
       </div>

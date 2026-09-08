@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Noto_Sans_JP, DM_Mono, Space_Grotesk } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Noto_Sans_JP, DM_Mono, Space_Grotesk, Klee_One } from "next/font/google";
 import { LanguageProvider } from "@/lib/LanguageContext";
 import CommandPalette from "@/components/CommandPalette";
 import PageTracker from "@/components/PageTracker";
@@ -25,6 +25,22 @@ const spaceGrotesk = Space_Grotesk({
   weight: ["400", "500", "600", "700"],
   display: "swap",
 });
+
+// Pen-like Japanese face for the visitor's own words on the canvas.
+const klee = Klee_One({
+  variable: "--font-klee",
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  display: "swap",
+  preload: false,
+});
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#fbfaf7",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://koyatani.com"),
@@ -58,9 +74,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://koyatani.com",
-  },
-  other: {
-    "theme-color": "#0c0f14",
   },
 };
 
@@ -110,11 +123,6 @@ export default function RootLayout({
   return (
     <html lang="ja" className="scroll-smooth">
       <head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, viewport-fit=cover"
-        />
-        <meta name="theme-color" content="#0c0f14" />
         <meta name="google-site-verification" content="8ZkEJ-lThcmV9gYsTMnQgZQTwCtUqG38j-c3dvHAUCk" />
         <script
           type="application/ld+json"
@@ -122,7 +130,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${notoSans.variable} ${dmMono.variable} ${spaceGrotesk.variable} antialiased`}
+        className={`${notoSans.variable} ${dmMono.variable} ${spaceGrotesk.variable} ${klee.variable} antialiased`}
       >
         <LanguageProvider>
           <PageTracker />

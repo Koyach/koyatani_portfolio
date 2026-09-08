@@ -19,30 +19,31 @@ export default function CommandPalette() {
   const router = useRouter();
 
   const items: PaletteItem[] = [
-    // Sections
-    { id: "about", label: "About", sublabel: "Profile & principles", category: "Sections", action: () => navigate("#about") },
-    { id: "projects", label: "Projects", sublabel: "Mirakoe, Bedrock, Noto", category: "Sections", action: () => navigate("#projects") },
-    { id: "achievements", label: "Achievements", sublabel: "Awards & programs", category: "Sections", action: () => navigate("#achievements") },
-    { id: "media", label: "Media", sublabel: "TV, press, speaking", category: "Sections", action: () => navigate("#media") },
-    { id: "skiing", label: "Skiing", sublabel: "Freestyle & alpine", category: "Sections", action: () => navigate("#skiing") },
-    { id: "contact", label: "Contact", sublabel: "SNS & scheduling", category: "Sections", action: () => navigate("#contact") },
+    // Canvas topics — open on the drawing canvas without drawing
+    { id: "about", label: "About", sublabel: "私について", category: "Canvas", action: () => openTopic("about") },
+    { id: "works", label: "Work", sublabel: "実績・プロジェクト", category: "Canvas", action: () => openTopic("works") },
+    { id: "philosophy", label: "Philosophy", sublabel: "思想", category: "Canvas", action: () => openTopic("philosophy") },
+    { id: "contact", label: "Contact", sublabel: "コンタクト・SNS", category: "Canvas", action: () => openTopic("contact") },
+    { id: "skiing", label: "Skiing", sublabel: "スキー", category: "Canvas", action: () => openTopic("skiing") },
+    { id: "media", label: "Media", sublabel: "メディア", category: "Canvas", action: () => openTopic("media") },
+    { id: "achievements", label: "Achievements", sublabel: "受賞・所属", category: "Canvas", action: () => openTopic("achievements") },
+    { id: "writing", label: "Writing", sublabel: "文章・ブログ", category: "Canvas", action: () => openTopic("writing") },
     // Pages
     { id: "blog", label: "Blog", sublabel: "Thoughts & notes", category: "Pages", action: () => router.push("/blog") },
-    { id: "bookshelf", label: "Bookshelf", sublabel: "Recommended books", category: "Pages", action: () => router.push("/bookshelf") },
+    { id: "cv", label: "CV", sublabel: "Print / PDF", category: "Pages", action: () => router.push("/cv") },
     { id: "p-mirakoe", label: "Mirakoe", sublabel: "Project detail", category: "Projects", action: () => router.push("/projects/mirakoe") },
     { id: "p-bedrock", label: "Bedrock Space", sublabel: "Project detail", category: "Projects", action: () => router.push("/projects/bedrock-space") },
     { id: "p-noto", label: "Noto Lacquerware", sublabel: "Project detail", category: "Projects", action: () => router.push("/projects/noto") },
     // Easter eggs
     { id: "ee-ski", label: "ski", sublabel: "Watch freestyle video", category: "Easter Eggs", action: () => window.open("https://www.instagram.com/koyatani_0828", "_blank") },
-    { id: "ee-home", label: "home", sublabel: "Go to top", category: "Easter Eggs", action: () => navigate("#") },
+    { id: "ee-home", label: "home", sublabel: "Back to the canvas", category: "Easter Eggs", action: () => router.push("/") },
   ];
 
-  function navigate(hash: string) {
-    if (window.location.pathname !== "/") {
-      router.push("/" + hash);
+  function openTopic(topic: string) {
+    if (window.location.pathname === "/") {
+      window.dispatchEvent(new CustomEvent("atelier:open", { detail: topic }));
     } else {
-      const el = document.querySelector(hash === "#" ? "body" : hash);
-      el?.scrollIntoView({ behavior: "smooth" });
+      router.push(`/?open=${topic}`);
     }
   }
 
