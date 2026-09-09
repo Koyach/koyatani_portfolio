@@ -284,3 +284,17 @@ function arcPt(center: Pt, rad: number, start: number, u: number): Pt {
   const a = start + (Math.PI / 2) * u;
   return { x: center.x + Math.cos(a) * rad, y: center.y + Math.sin(a) * rad };
 }
+
+/** A rectangle around a box, as a polygon — the hit area of a written word. */
+export function bboxPolygon(b: BBox, pad: number): Pt[] {
+  const x0 = b.minX - pad;
+  const y0 = b.minY - pad;
+  const x1 = b.maxX + pad;
+  const y1 = b.maxY + pad;
+  return [
+    { x: x0, y: y0 },
+    { x: x1, y: y0 },
+    { x: x1, y: y1 },
+    { x: x0, y: y1 },
+  ];
+}

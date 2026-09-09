@@ -13,6 +13,12 @@ export type BBox = { minX: number; minY: number; maxX: number; maxY: number };
  */
 export type StrokeKind = "ink" | "shape" | "writing" | "link" | "generated";
 
+/**
+ * enclosure — a closed outline the visitor drew; the word goes inside it
+ * written   — a word written straight onto the paper; the strokes are the button
+ */
+export type ShapeMode = "enclosure" | "written";
+
 export interface Stroke {
   id: string;
   points: Pt[];
@@ -23,13 +29,18 @@ export interface Stroke {
 
 export interface Shape {
   id: string;
+  mode: ShapeMode;
   strokeIds: string[];
   polygon: Pt[];
   bbox: BBox;
   label: string | null;
   topic: TopicId | null;
   generated?: boolean;
+  /** the label came from handwriting recognition, so offer a way to correct it */
+  fromRecognition?: boolean;
   createdAt: number;
+  /** last time a stroke joined this shape — used to group a word being written */
+  updatedAt?: number;
 }
 
 export interface PanelState {

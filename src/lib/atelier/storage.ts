@@ -67,6 +67,7 @@ function sanitize(doc: Doc): Doc {
     .filter((s) => s && typeof s.id === "string" && Array.isArray(s.polygon) && s.polygon.length >= 3)
     .map((s) => ({
       ...s,
+      mode: s.mode === "written" ? ("written" as const) : ("enclosure" as const),
       strokeIds: (s.strokeIds ?? []).filter((id) => strokeIds.has(id)),
       topic: isTopicId(s.topic) ? s.topic : null,
       label: typeof s.label === "string" ? s.label : null,

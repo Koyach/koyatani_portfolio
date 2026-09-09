@@ -4,13 +4,14 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import { useLanguage } from "@/lib/LanguageContext";
 import { TOPIC_BY_ID, isTopicId, resolveWord, type TopicId } from "@/lib/atelier/topics";
 import { getRelation } from "@/lib/atelier/relations";
-import { isHandwritingAvailable, recognizeStrokes } from "@/lib/atelier/handwriting";
+import { recognize } from "@/lib/atelier/handwriting";
 import { clearState, loadState, saveState } from "@/lib/atelier/storage";
 import { downloadBlob, exportPng } from "@/lib/atelier/export";
 import { fill } from "@/lib/atelier/text";
 import {
   bbox,
   bboxExpand,
+  bboxPolygon,
   bboxIntersects,
   bboxUnion,
   insideFraction,
@@ -34,7 +35,7 @@ import {
   type View,
 } from "@/lib/atelier/types";
 import InkLayer from "./InkLayer";
-import ShapeOverlay, { type EditState, type SuggestState } from "./ShapeOverlay";
+import ShapeOverlay, { type EditState, type GuessState, type SuggestState } from "./ShapeOverlay";
 import Panel from "./Panel";
 import ConnectionNote from "./ConnectionNote";
 import Toolbar from "./Toolbar";
@@ -80,9 +81,10 @@ function useMediaQuery(query: string): boolean {
 }
 
 /**
- * The atelier: a white canvas where drawing is the interface.
- * Draw an enclosure → tap inside → type a word → the enclosure becomes a
- * button → the matching part of the portfolio unfolds beside it.
+ * The atelier: a white canvas where writing is the interface.
+ * Write a word straight onto the paper — the strokes are read, and they become
+ * the button that unfolds that part of the portfolio. Drawing an enclosure and
+ * typing inside it still works for anyone who would rather not write.
  */
 export default function Atelier({ posts }: { posts: PostSummary[] }) {
   const { t, locale, toggleLocale } = useLanguage();
@@ -156,13 +158,14 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
   const editingRef = useRef<string | null>(null);
   const [suggest, setSuggest] = useState<({ shapeId: string } & SuggestState) | null>(null);
   const [pillShape, setPillShape] = useState<string | null>(null);
+  const [guess, setGuess] = useState<({ shapeId: string } & GuessState) | null>(null);
+  const [thinking, setThinking] = useState<string | null>(null);
   const [hintPhase, setHintPhase] = useState<"none" | "ask" | "demo">("none");
   const [helpOpen, setHelpOpen] = useState(false);
   const [indexOpen, setIndexOpen] = useState(false);
   const [announce, setAnnounce] = useState("");
   const [focusShape, setFocusShape] = useState<string | null>(null);
   const [focusReq, setFocusReq] = useState<{ shapeId: string; n: number } | null>(null);
-  const [hwAvailable, setHwAvailable] = useState(false);
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 
   const rootRef = useRef<HTMLDivElement>(null);
@@ -171,7 +174,8 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
   const pointers = useRef(new Map<number, Pt & { type: string }>());
   const zTop = useRef(1);
   const hintTimers = useRef<number[]>([]);
-  const writeTimer = useRef<number | null>(null);
+  const writeTimers = useRef(new Map<string, number>());
+  const recogAborts = useRef(new Map<string, AbortController>());
   const api = useRef<Api | null>(null);
 
   const narrow = vp.w < 640;
@@ -264,7 +268,9 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
       if (fits(lx)) candidates.push({ x: lx, y: b.minY, w, side: "left" });
     }
     const sx = Math.min(Math.max(b.minX * k + v.x, 12), vw - w * k - 12);
-    candidates.push({ x: (sx - v.x) / k, y: b.maxY + PANEL_GAP, w, side: "below" });
+    // a written word carries its reading underneath, so leave that line clear
+    const below = b.maxY + PANEL_GAP + (shape.mode === "written" ? 26 / k : 0);
+    candidates.push({ x: (sx - v.x) / k, y: below, w, side: "below" });
 
     // prefer a spot that does not sit on another open sheet
     const clear = candidates.find((c) => overlaps(c.x, c.y).length === 0);
@@ -324,6 +330,7 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
   const beginEdit = (shapeId: string, prefill: string, note: EditState["note"]) => {
     setSuggest(null);
     setPillShape(null);
+    setGuess(null);
     editingRef.current = shapeId;
     setEditing({ shapeId, prefill, note });
     const shape = docRef.current.shapes.find((s) => s.id === shapeId);
@@ -343,7 +350,7 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
     const res = resolveWord(trimmed);
     commit((d) => ({
       ...d,
-      shapes: d.shapes.map((s) => (s.id === shapeId ? { ...s, label: trimmed, topic: res.topic } : s)),
+      shapes: d.shapes.map((s) => (s.id === shapeId ? { ...s, label: trimmed, topic: res.topic, fromRecognition: false } : s)),
     }));
     if (res.topic) {
       openPanel(shapeId, res.topic, true, res.anchor);
@@ -361,7 +368,28 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
     if (shape?.label) say(fill(at.a11y.became, { label: shape.label, topic: topicName(topic) }));
   };
   const keepWord = () => setSuggest(null);
-  const onPill = (shapeId: string) => beginEdit(shapeId, "", hwAvailable ? null : "noRecognition");
+  const onPill = (shapeId: string) => beginEdit(shapeId, "", pillShape === shapeId ? "noRecognition" : null);
+  /** The visitor disagrees with what we read; hand them the word to edit. */
+  const correctLabel = (shapeId: string) => {
+    const shape = docRef.current.shapes.find((s) => s.id === shapeId);
+    beginEdit(shapeId, shape?.label ?? "", "recognized");
+  };
+  /** One of the recogniser's alternatives was chosen. */
+  const pickCandidate = (shapeId: string, word: string) => {
+    setGuess(null);
+    const res = resolveWord(word);
+    commit((d) => ({
+      ...d,
+      shapes: d.shapes.map((s) => (s.id === shapeId ? { ...s, label: word, topic: res.topic, fromRecognition: true } : s)),
+    }));
+    if (res.topic) {
+      openPanel(shapeId, res.topic, true, res.anchor);
+      say(fill(at.a11y.became, { label: word, topic: topicName(res.topic) }));
+    } else {
+      setSuggest({ shapeId, word, options: res.suggestions });
+      say(fill(at.a11y.unknownWord, { word }));
+    }
+  };
   /** Keyboard focus landing on a word off-screen pans the canvas to it instead of scrolling the root. */
   const focusShapeById = (id: string | null) => {
     setFocusShape(id);
@@ -375,27 +403,222 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
     else beginEdit(shape.id, "", null);
   };
 
-  const attemptRecognition = async (shapeId: string) => {
-    const shape = docRef.current.shapes.find((s) => s.id === shapeId);
+  const cancelReadings = () => {
+    for (const id of writeTimers.current.values()) window.clearTimeout(id);
+    writeTimers.current.clear();
+    for (const ac of recogAborts.current.values()) ac.abort();
+    recogAborts.current.clear();
+  };
+
+  /**
+   * Wait for the pen to settle, then read that word. Timers are per mark, so
+   * a word written earlier is still read even while another one is in progress.
+   */
+  const scheduleRecognition = (shapeId: string) => {
+    const timers = writeTimers.current;
+    const prev = timers.get(shapeId);
+    if (prev) window.clearTimeout(prev);
+    recogAborts.current.get(shapeId)?.abort();
+    setGuess((g) => (g?.shapeId === shapeId ? null : g));
+    setPillShape((x) => (x === shapeId ? null : x));
+    timers.set(
+      shapeId,
+      window.setTimeout(() => {
+        timers.delete(shapeId);
+        void runRecognition(shapeId);
+      }, 850)
+    );
+  };
+
+  const applyRecognized = (shapeId: string, word: string, topic: TopicId, anchor?: string) => {
+    setGuess(null);
+    setPillShape(null);
+    commit((d) => ({
+      ...d,
+      shapes: d.shapes.map((s) => (s.id === shapeId ? { ...s, label: word, topic, fromRecognition: true } : s)),
+    }));
+    openPanel(shapeId, topic, true, anchor);
+    say(fill(at.a11y.read, { label: word, topic: topicName(topic) }));
+  };
+
+  /**
+   * Read the strokes of one mark. The recogniser returns several candidates;
+   * we take the first that means something here, so a near-miss on one glyph
+   * still lands. Nothing matching leaves the candidates on screen to choose
+   * from, and a failed read falls back to typing.
+   */
+  const runRecognition = async (shapeId: string) => {
+    const d0 = docRef.current;
+    const shape = d0.shapes.find((s) => s.id === shapeId);
     if (!shape || shape.topic || shape.label || editingRef.current === shapeId) return;
-    const strokes = docRef.current.strokes
-      .filter((s) => s.kind === "writing" && s.shapeId === shapeId)
-      .map((s) => s.points.map((p) => ({ x: p.x - shape.bbox.minX, y: p.y - shape.bbox.minY })));
-    if (!strokes.length) return;
-    if (await isHandwritingAvailable()) {
-      const res = await recognizeStrokes(strokes);
-      if (res && res[0]) {
-        beginEdit(shapeId, res[0], "recognized");
+    const written = d0.strokes.filter((s) => s.kind === "writing" && s.shapeId === shapeId);
+    if (!written.length) return;
+
+    const b = bbox(written.flatMap((s) => s.points));
+    const local = written.map((s) => s.points.map((p) => ({ x: p.x - b.minX, y: p.y - b.minY })));
+    const ac = new AbortController();
+    recogAborts.current.set(shapeId, ac);
+    setThinking(shapeId);
+    const res = await recognize(local, Math.max(1, b.maxX - b.minX), Math.max(1, b.maxY - b.minY), ac.signal);
+    recogAborts.current.delete(shapeId);
+    if (ac.signal.aborted) return;
+    setThinking((cur) => (cur === shapeId ? null : cur));
+
+    // the mark may have been erased, labelled or edited while we waited
+    const still = docRef.current.shapes.find((s) => s.id === shapeId);
+    if (!still || still.topic || still.label || editingRef.current === shapeId) return;
+
+    if (!res || !res.candidates.length) {
+      setPillShape(shapeId);
+      say(at.a11y.notRead);
+      return;
+    }
+    for (const c of res.candidates) {
+      const r = resolveWord(c);
+      if (r.topic) {
+        applyRecognized(shapeId, c, r.topic, r.anchor);
         return;
       }
     }
-    setPillShape(shapeId);
+    setGuess({ shapeId, options: res.candidates.slice(0, 5) });
+    say(fill(at.a11y.guessing, { word: res.candidates[0] }));
   };
 
   // ------------------------------------------------------------ strokes
   const now = () => Date.now();
-  const addInk = (pts: Pt[]) =>
-    commit((d) => ({ ...d, strokes: [...d.strokes, { id: uid("s"), points: pts, kind: "ink", createdAt: now() }] }));
+  /** How long a pause still counts as writing the same word, and how far apart. */
+  const WRITE_JOIN_MS = 5000;
+  const writePad = () => 8 / viewRef.current.k;
+
+  /** An unnamed word still being written that this stroke probably belongs to. */
+  const openMarkNear = (b: BBox): Shape | null => {
+    const k = viewRef.current.k;
+    const t = now();
+    let best: { shape: Shape; d: number } | null = null;
+    for (const s of docRef.current.shapes) {
+      if (s.mode !== "written" || s.label || s.topic) continue;
+      if (t - (s.updatedAt ?? s.createdAt) > WRITE_JOIN_MS) continue;
+      // Size the reach on the glyphs already written, not on this one stroke:
+      // a single short stroke (キ's top bar, ー) must still reach its neighbours.
+      const glyph = Math.max(s.bbox.maxY - s.bbox.minY, b.maxY - b.minY, 30 / k);
+      const gapX = Math.max(80 / k, glyph * 1.2);
+      const gapY = Math.max(44 / k, glyph * 0.6);
+      const reach: BBox = {
+        minX: s.bbox.minX - gapX,
+        maxX: s.bbox.maxX + gapX,
+        minY: s.bbox.minY - gapY,
+        maxY: s.bbox.maxY + gapY,
+      };
+      if (!bboxIntersects(reach, b)) continue;
+      const d = Math.abs((s.bbox.minX + s.bbox.maxX) / 2 - (b.minX + b.maxX) / 2);
+      if (!best || d < best.d) best = { shape: s, d };
+    }
+    return best?.shape ?? null;
+  };
+
+  /** Turn a mark whose strokes closed into a proper enclosure. */
+  const convertMarkToEnclosure = (shapeId: string, poly: Pt[], usedIds: string[]) => {
+    const polygon = resample(poly, 3);
+    mutate((d) => ({
+      ...d,
+      strokes: d.strokes.map((s) => (usedIds.includes(s.id) ? { ...s, kind: "shape" as const, shapeId } : s)),
+      shapes: d.shapes.map((s) =>
+        s.id === shapeId
+          ? { ...s, mode: "enclosure" as const, strokeIds: usedIds, polygon, bbox: bbox(polygon) }
+          : s
+      ),
+    }));
+    say(at.a11y.shapeMade);
+  };
+
+  /**
+   * Someone drawing a box in two or three strokes looks exactly like someone
+   * writing, until the strokes meet. After each stroke, see whether the mark
+   * has closed into an enclosure; if it has, it stops being a word.
+   */
+  const tryCloseMark = (shapeId: string): boolean => {
+    const k = viewRef.current.k;
+    const minSize = 40 / k;
+    const d = docRef.current;
+    const shape = d.shapes.find((s) => s.id === shapeId);
+    if (!shape || shape.mode !== "written" || shape.label || shape.topic) return false;
+    const strokes = d.strokes.filter((s) => s.kind === "writing" && s.shapeId === shapeId);
+    if (strokes.length < 2 || strokes.length > 4) return false;
+
+    const ordered = [...strokes].reverse(); // newest first
+    let cur = ordered[0].points;
+    const used = [ordered[0].id];
+    for (const c of ordered.slice(1)) {
+      const b = bbox([...cur, ...c.points]);
+      const tol = Math.max(26 / k, Math.hypot(b.maxX - b.minX, b.maxY - b.minY) * 0.18);
+      const joined = joinStrokes(cur, c.points, tol);
+      if (!joined) break;
+      cur = joined;
+      used.push(c.id);
+      if (isEnclosure(cur, minSize)) {
+        convertMarkToEnclosure(shapeId, cur, used);
+        return true;
+      }
+    }
+    return false;
+  };
+
+  /**
+   * A line drawn on bare paper is treated as writing: it joins the word being
+   * written next to it, or starts a new one. The strokes themselves become the
+   * button — there is no box to draw first.
+   */
+  const addWrittenStroke = (pts: Pt[]) => {
+    const b = bbox(pts);
+    const pad = writePad();
+    const t = now();
+    const strokeId = uid("s");
+    const target = openMarkNear(b);
+
+    if (target) {
+      commit((d) => {
+        const strokes = [
+          ...d.strokes,
+          { id: strokeId, points: pts, kind: "writing" as const, shapeId: target.id, createdAt: t },
+        ];
+        const all = strokes.filter((s) => s.kind === "writing" && s.shapeId === target.id).flatMap((s) => s.points);
+        const nb = bbox(all);
+        return {
+          ...d,
+          strokes,
+          shapes: d.shapes.map((s) =>
+            s.id === target.id
+              ? { ...s, strokeIds: [...s.strokeIds, strokeId], bbox: nb, polygon: bboxPolygon(nb, pad), updatedAt: t }
+              : s
+          ),
+        };
+      });
+      if (tryCloseMark(target.id)) return;
+      scheduleRecognition(target.id);
+      return;
+    }
+
+    const shapeId = uid("shape");
+    commit((d) => ({
+      ...d,
+      strokes: [...d.strokes, { id: strokeId, points: pts, kind: "writing" as const, shapeId, createdAt: t }],
+      shapes: [
+        ...d.shapes,
+        {
+          id: shapeId,
+          mode: "written" as const,
+          strokeIds: [strokeId],
+          polygon: bboxPolygon(b, pad),
+          bbox: b,
+          label: null,
+          topic: null,
+          createdAt: t,
+          updatedAt: t,
+        },
+      ],
+    }));
+    scheduleRecognition(shapeId);
+  };
 
   const createShape = (poly: Pt[], newPts: Pt[], usedIds: string[]) => {
     const strokeId = uid("s");
@@ -407,6 +630,7 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
         .concat({ id: strokeId, points: newPts, kind: "shape", shapeId, createdAt: now() });
       const shape: Shape = {
         id: shapeId,
+        mode: "enclosure",
         strokeIds: [...usedIds, strokeId],
         polygon,
         bbox: bbox(polygon),
@@ -424,10 +648,7 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
       ...d,
       strokes: [...d.strokes, { id: uid("s"), points: pts, kind: "writing", shapeId: shape.id, createdAt: now() }],
     }));
-    if (!shape.topic && !shape.label) {
-      if (writeTimer.current) window.clearTimeout(writeTimer.current);
-      writeTimer.current = window.setTimeout(() => void attemptRecognition(shape.id), 900);
-    }
+    if (!shape.topic && !shape.label) scheduleRecognition(shape.id);
   };
 
   const addConnection = (a: Shape, b: Shape, pts: Pt[]) => {
@@ -455,43 +676,20 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
       }
     }
 
-    if (startShape && insideFraction(pts, startShape.polygon) >= 0.7) {
+    if (startShape && startShape.mode === "enclosure" && insideFraction(pts, startShape.polygon) >= 0.7) {
       addWriting(startShape, pts);
       return;
     }
 
+    // A single closed stroke on empty paper is a box. A closed stroke beside a
+    // word being written is a glyph (口, 回…). Anything else is writing, and
+    // tryCloseMark promotes it later if the strokes turn out to meet.
     const minSize = 40 / k;
-    let poly: Pt[] | null = null;
-    const used: string[] = [];
-    if (isEnclosure(pts, minSize)) {
-      poly = pts;
-    } else {
-      const recent = docRef.current.strokes
-        .filter((s) => s.kind === "ink" && now() - s.createdAt < 90_000)
-        .slice(-5)
-        .reverse();
-      let cur = pts;
-      for (let round = 0; round < 3 && !poly; round++) {
-        let joined = false;
-        for (const c of recent) {
-          if (used.includes(c.id)) continue;
-          const b = bbox([...cur, ...c.points]);
-          const tol = Math.max(26 / k, Math.hypot(b.maxX - b.minX, b.maxY - b.minY) * 0.18);
-          const j = joinStrokes(cur, c.points, tol);
-          if (j) {
-            cur = j;
-            used.push(c.id);
-            joined = true;
-            if (isEnclosure(cur, minSize)) poly = cur;
-            break;
-          }
-        }
-        if (!joined) break;
-      }
+    if (isEnclosure(pts, minSize) && !openMarkNear(bbox(pts))) {
+      createShape(pts, pts, []);
+      return;
     }
-
-    if (poly) createShape(poly, pts, used);
-    else addInk(pts);
+    addWrittenStroke(pts);
   };
 
   const eraseAt = (w: Pt, g: { snapped: boolean }) => {
@@ -527,12 +725,17 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
     }
     setSuggest((s) => (s && ids.has(s.shapeId) ? s : null));
     setPillShape((p) => (p && ids.has(p) ? p : null));
+    setGuess((g) => (g && ids.has(g.shapeId) ? g : null));
+    setThinking((x) => (x && ids.has(x) ? x : null));
   };
   const resetTransient = () => {
     editingRef.current = null;
     setEditing(null);
     setSuggest(null);
     setPillShape(null);
+    setGuess(null);
+    setThinking(null);
+    cancelReadings();
   };
 
   // ------------------------------------------------------------ actions
@@ -647,7 +850,17 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
       strokes: [...d.strokes, { id: strokeId, points: [...poly, poly[0]], kind: "generated", createdAt: now() }],
       shapes: [
         ...d.shapes,
-        { id: shapeId, strokeIds: [strokeId], polygon: poly, bbox: bbox(poly), label, topic, generated: true, createdAt: now() },
+        {
+          id: shapeId,
+          mode: "enclosure",
+          strokeIds: [strokeId],
+          polygon: poly,
+          bbox: bbox(poly),
+          label,
+          topic,
+          generated: true,
+          createdAt: now(),
+        },
       ],
     }));
     openPanel(shapeId, topic);
@@ -657,6 +870,7 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
     if (helpOpen) return setHelpOpen(false);
     if (indexOpen) return setIndexOpen(false);
     if (suggest) return setSuggest(null);
+    if (guess) return setGuess(null);
     const open = docRef.current.panels.filter((p) => p.open).sort((a, b) => b.z - a.z)[0];
     if (open) closePanel(open.shapeId);
   };
@@ -845,16 +1059,12 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
     return () => ro.disconnect();
   }, []);
 
-  // handwriting API availability, body scroll lock
+  // body scroll lock
   useEffect(() => {
-    let alive = true;
-    isHandwritingAvailable().then((ok) => {
-      if (alive) setHwAvailable(ok);
-    });
     document.body.classList.add("atelier-body");
     return () => {
-      alive = false;
       document.body.classList.remove("atelier-body");
+      cancelReadings();
     };
   }, []);
 
@@ -967,11 +1177,15 @@ export default function Atelier({ posts }: { posts: PostSummary[] }) {
             hasWriting={doc.strokes.some((s) => s.kind === "writing" && s.shapeId === shape.id)}
             editing={editing?.shapeId === shape.id ? editing : null}
             suggest={suggest?.shapeId === shape.id ? suggest : null}
+            guess={guess?.shapeId === shape.id ? guess : null}
+            thinking={thinking === shape.id}
             pill={pillShape === shape.id}
             onActivate={activateShape}
             onCommitLabel={commitLabel}
             onCancelEdit={cancelEdit}
             onPickTopic={pickTopic}
+            onPickCandidate={pickCandidate}
+            onCorrect={correctLabel}
             onKeepWord={keepWord}
             onPill={onPill}
             onFocusShape={focusShapeById}

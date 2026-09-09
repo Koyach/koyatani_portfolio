@@ -98,8 +98,10 @@ export function HelpPopover({ at, onClose }: { at: AtelierText; onClose: () => v
           <li key={i}>{s}</li>
         ))}
       </ol>
+      <p>{at.helpBox}</p>
       <p>{at.helpMore}</p>
       <p className="atelier-sheet-fine">{at.helpShortcuts}</p>
+      <p className="atelier-sheet-fine">{at.helpPrivacy}</p>
       <button type="button" className="atelier-sheet-close" onClick={onClose} aria-label={at.close}>
         ×
       </button>
