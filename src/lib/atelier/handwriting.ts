@@ -1,10 +1,16 @@
 import type { Pt } from "./types";
 
 /**
- * Handwriting recognition — only through the browser's own
- * Web Handwriting Recognition API (navigator.createHandwritingRecognizer).
- * No external service, no credentials. When the API is missing the caller
- * must fall back to typed input; we never invent a "recognized" word.
+ * Reading what the visitor wrote.
+ *
+ * Two sources, tried in order:
+ *   1. the browser's own Web Handwriting Recognition API, when it exists
+ *      (ChromeOS only in practice) — nothing leaves the device;
+ *   2. /api/handwriting, which relays the strokes to Google's handwriting
+ *      endpoint and returns candidates.
+ *
+ * When both fail we return null. We never invent a word: the caller falls
+ * back to asking the visitor to type.
  */
 
 interface HwPoint {
@@ -35,12 +41,20 @@ declare global {
   }
 }
 
-let cached: Promise<boolean> | null = null;
+export type RecognitionSource = "browser" | "relay";
 
-export function isHandwritingAvailable(): Promise<boolean> {
-  if (cached) return cached;
-  cached = (async () => {
-    if (typeof navigator === "undefined") return false;
+export interface Recognition {
+  candidates: string[];
+  source: RecognitionSource;
+}
+
+let nativeCached: Promise<boolean> | null = null;
+
+/** True when the browser can recognise handwriting without any network call. */
+export function isNativeHandwritingAvailable(): Promise<boolean> {
+  if (nativeCached) return nativeCached;
+  nativeCached = (async () => {
+    if (typeof navigator === "undefined" || typeof window === "undefined") return false;
     const nav = navigator as unknown as HwNavigator;
     if (!nav.createHandwritingRecognizer || typeof window.HandwritingStroke !== "function") return false;
     try {
@@ -53,26 +67,23 @@ export function isHandwritingAvailable(): Promise<boolean> {
       return false;
     }
   })();
-  return cached;
+  return nativeCached;
 }
 
-/**
- * Returns candidate strings (best first), or null when recognition is not
- * available or fails. Strokes are given in the enclosure's local pixel space.
- */
-export async function recognizeStrokes(strokes: Pt[][], languages: string[] = ["ja", "en"]): Promise<string[] | null> {
-  if (!(await isHandwritingAvailable())) return null;
+async function recognizeNatively(strokes: Pt[][]): Promise<string[] | null> {
+  if (!(await isNativeHandwritingAvailable())) return null;
   const nav = navigator as unknown as HwNavigator;
   const StrokeCtor = window.HandwritingStroke;
   if (!nav.createHandwritingRecognizer || !StrokeCtor) return null;
   try {
-    const recognizer = await nav.createHandwritingRecognizer({ languages });
-    const drawing = recognizer.startDrawing({ recognitionType: "text", inputType: "mouse", alternatives: 3 });
+    const recognizer = await nav.createHandwritingRecognizer({ languages: ["ja", "en"] });
+    const drawing = recognizer.startDrawing({ recognitionType: "text", inputType: "mouse", alternatives: 6 });
     let t = 0;
     for (const pts of strokes) {
       const s = new StrokeCtor();
-      for (const p of pts) s.addPoint({ x: p.x, y: p.y, t: (t += 8) });
+      for (const p of pts) s.addPoint({ x: p.x, y: p.y, t: (t += 10) });
       drawing.addStroke(s);
+      t += 120;
     }
     const predictions = await drawing.getPrediction();
     recognizer.finish();
@@ -81,4 +92,48 @@ export async function recognizeStrokes(strokes: Pt[][], languages: string[] = ["
   } catch {
     return null;
   }
+}
+
+async function recognizeViaRelay(strokes: Pt[][], width: number, height: number, signal?: AbortSignal): Promise<string[] | null> {
+  try {
+    const res = await fetch("/api/handwriting", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        strokes: strokes.map((s) => s.map((p) => ({ x: Math.round(p.x * 10) / 10, y: Math.round(p.y * 10) / 10 }))),
+        width: Math.round(width),
+        height: Math.round(height),
+      }),
+      signal,
+    });
+    if (!res.ok) return null;
+    const data: { candidates?: unknown } = await res.json();
+    if (!Array.isArray(data.candidates)) return null;
+    const list = data.candidates.filter((c): c is string => typeof c === "string" && c.trim().length > 0);
+    return list.length ? list : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Strokes are given in the mark's own pixel space (origin at its top-left).
+ * `width` / `height` describe that box so the recogniser knows the scale.
+ */
+export async function recognize(
+  strokes: Pt[][],
+  width: number,
+  height: number,
+  signal?: AbortSignal
+): Promise<Recognition | null> {
+  if (!strokes.length) return null;
+
+  const native = await recognizeNatively(strokes);
+  if (native) return { candidates: native, source: "browser" };
+
+  if (signal?.aborted) return null;
+  const relayed = await recognizeViaRelay(strokes, width, height, signal);
+  if (relayed) return { candidates: relayed, source: "relay" };
+
+  return null;
 }

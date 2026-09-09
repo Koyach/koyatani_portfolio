@@ -16,6 +16,11 @@ export interface SuggestState {
   options: TopicId[];
 }
 
+export interface GuessState {
+  /** what the recogniser thought the strokes said, best first */
+  options: string[];
+}
+
 interface Props {
   shape: Shape;
   locale: Locale;
@@ -24,34 +29,82 @@ interface Props {
   hasWriting: boolean;
   editing: EditState | null;
   suggest: SuggestState | null;
+  guess: GuessState | null;
+  thinking: boolean;
   pill: boolean;
   onActivate: (shape: Shape) => void;
   onCommitLabel: (shapeId: string, word: string) => void;
   onCancelEdit: (shapeId: string) => void;
   onPickTopic: (shapeId: string, topic: TopicId) => void;
+  onPickCandidate: (shapeId: string, word: string) => void;
+  onCorrect: (shapeId: string) => void;
   onKeepWord: (shapeId: string) => void;
   onPill: (shapeId: string) => void;
   onFocusShape: (id: string | null) => void;
 }
 
 /**
- * The HTML that lives inside a drawn enclosure: the visitor's word as a real
- * <button>, the inline text field, the "closest topic" chooser, and the quiet
- * placeholder. Positioned in world coordinates; the parent scales it.
+ * The HTML that sits on a mark: the visitor's word as a real <button>, the
+ * inline text field, the reading the recogniser offered, and the "closest
+ * topic" chooser. Positioned in world coordinates; the parent scales it.
+ *
+ * Two shapes of mark:
+ *   written   — the strokes are the button; the reading sits under them
+ *   enclosure — the word sits inside the box that was drawn
  */
 export default function ShapeOverlay(props: Props) {
-  const { shape, locale, at, panelOpen, hasWriting, editing, suggest, pill } = props;
+  const { shape, locale, at, panelOpen, hasWriting, editing, suggest, guess, thinking, pill } = props;
+  const written = shape.mode === "written";
   const w = shape.bbox.maxX - shape.bbox.minX;
   const h = shape.bbox.maxY - shape.bbox.minY;
   const topicName = shape.topic ? TOPIC_BY_ID[shape.topic].name[locale] : null;
 
+  const wordLabel = shape.label
+    ? shape.topic
+      ? `${shape.label} — ${topicName}${panelOpen ? `（${at.close}）` : `（${at.open}）`}`
+      : `${shape.label} — ${fill(at.suggestTitle, { word: shape.label })}`
+    : "";
+
   return (
     <div
-      className="atelier-shape"
+      className={`atelier-shape ${written ? "is-written" : ""}`}
       style={{ left: shape.bbox.minX, top: shape.bbox.minY, width: w, height: h }}
       data-shape-id={shape.id}
     >
-      {shape.label && !editing && (
+      {/* ---------------------------------------------- a word we can act on */}
+      {shape.label && !editing && written && (
+        <>
+          <button
+            type="button"
+            data-ui
+            data-shape-button={shape.id}
+            className="atelier-written"
+            aria-expanded={shape.topic ? panelOpen : undefined}
+            aria-label={wordLabel}
+            onClick={() => props.onActivate(shape)}
+            onFocus={() => props.onFocusShape(shape.id)}
+            onBlur={() => props.onFocusShape(null)}
+          />
+          <span className="atelier-written-caption" data-ui>
+            <span className={shape.topic ? "" : "is-unknown"} aria-hidden="true">
+              {shape.label}
+            </span>
+            {shape.fromRecognition && (
+              <button
+                type="button"
+                className="atelier-correct"
+                onClick={() => props.onCorrect(shape.id)}
+                aria-label={fill(at.correctRead, { word: shape.label })}
+                title={at.correct}
+              >
+                {at.correct}
+              </button>
+            )}
+          </span>
+        </>
+      )}
+
+      {shape.label && !editing && !written && (
         <button
           type="button"
           data-ui
@@ -64,11 +117,7 @@ export default function ShapeOverlay(props: Props) {
             whiteSpace: Array.from(shape.label).length <= 10 ? "nowrap" : undefined,
           }}
           aria-expanded={shape.topic ? panelOpen : undefined}
-          aria-label={
-            shape.topic
-              ? `${shape.label} — ${topicName}${panelOpen ? `（${at.close}）` : `（${at.open}）`}`
-              : `${shape.label} — ${fill(at.suggestTitle, { word: shape.label })}`
-          }
+          aria-label={wordLabel}
           lang={/^[\x20-\x7e]+$/.test(shape.label) ? "en" : undefined}
           onClick={() => props.onActivate(shape)}
           onFocus={() => props.onFocusShape(shape.id)}
@@ -78,34 +127,49 @@ export default function ShapeOverlay(props: Props) {
         </button>
       )}
 
-      {!shape.label && !editing && !pill && !hasWriting && (
+      {/* ------------------------------------------------- reading in flight */}
+      {!shape.label && !editing && thinking && (
+        <span className="atelier-thinking" data-ui role="status">
+          {at.reading}
+        </span>
+      )}
+
+      {/* --------------------------------------- an empty enclosure, waiting */}
+      {!written && !shape.label && !editing && !pill && !thinking && !hasWriting && (
         <span className="atelier-placeholder" aria-hidden="true" style={{ fontSize: Math.min(14, Math.max(11, h * 0.18)) }}>
           {at.placeholderInShape}
         </span>
       )}
 
-      {!shape.label && !editing && !pill && hasWriting && (
-        <button
-          type="button"
-          data-ui
-          className="atelier-pill"
-          onClick={() => props.onPill(shape.id)}
-        >
+      {/* ---------------------------- we could not read it: offer the keyboard */}
+      {!shape.label && !editing && !thinking && !guess && (pill || (!written && hasWriting)) && (
+        <button type="button" data-ui className="atelier-pill" onClick={() => props.onPill(shape.id)}>
           {at.writePill} →
         </button>
       )}
 
-      {pill && !editing && (
-        <button type="button" data-ui className="atelier-pill" onClick={() => props.onPill(shape.id)}>
-          {at.writePill} →
-        </button>
+      {/* ------------------------------ read something, but nothing it matches */}
+      {guess && !editing && !shape.label && (
+        <div data-ui role="group" className="atelier-guess" aria-label={at.guessTitle}>
+          <p className="atelier-guess-title">{at.guessTitle}</p>
+          <div className="atelier-guess-options">
+            {guess.options.map((word) => (
+              <button key={word} type="button" onClick={() => props.onPickCandidate(shape.id, word)}>
+                {word}
+              </button>
+            ))}
+          </div>
+          <button type="button" className="atelier-guess-type" onClick={() => props.onPill(shape.id)}>
+            {at.guessType}
+          </button>
+        </div>
       )}
 
       {editing && (
         <LabelEditor
           key={shape.id}
           shapeId={shape.id}
-          width={Math.min(260, Math.max(128, w * 0.9))}
+          width={written ? 240 : Math.min(260, Math.max(128, w * 0.9))}
           prefill={editing.prefill}
           note={editing.note}
           at={at}
