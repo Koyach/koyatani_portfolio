@@ -1,7 +1,19 @@
 import { isTopicId } from "./topics";
 import type { Doc, View } from "./types";
 
-const KEY = "koyatani.atelier.v1";
+/**
+ * Bump this whenever the way a canvas is made changes.
+ *
+ * A returning visitor's saved canvas is restored on load, which means a
+ * redesign of the interaction would otherwise be invisible to exactly the
+ * people who came back for it: they would see their old drawing, made the old
+ * way, and no hint that anything is different. A new key retires those canvases
+ * so everyone meets the current version of the page.
+ *
+ * v2 — writing straight onto the paper replaced drawing an enclosure first.
+ */
+const KEY = "koyatani.atelier.v2";
+const RETIRED_KEYS = ["koyatani.atelier.v1"];
 
 interface Saved {
   doc: Doc;
@@ -12,6 +24,7 @@ interface Saved {
 export function loadState(): Saved | null {
   if (typeof window === "undefined") return null;
   try {
+    for (const old of RETIRED_KEYS) window.localStorage.removeItem(old);
     const raw = window.localStorage.getItem(KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<Saved>;
@@ -38,6 +51,7 @@ export function clearState(): void {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.removeItem(KEY);
+    for (const old of RETIRED_KEYS) window.localStorage.removeItem(old);
   } catch {
     // ignore
   }
